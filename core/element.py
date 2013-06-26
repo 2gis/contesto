@@ -1,0 +1,129 @@
+import re
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import WebDriverException, TimeoutException
+from config import config
+from core.exceptions import ElementNotFound, JavaScriptInjectionError
+
+
+class ContestoWebElement(WebElement):
+    ### @todo class very similar to ContestoWebDriver (especially sizzle-part). Common parts in separate class
+    def __init__(self, web_element):
+        """
+        :type web_element: WebElement
+        """
+        self.__dict__.update(web_element.__dict__)
+
+    @property
+    def text(self):
+        wait = WebDriverWait(super(ContestoWebElement, self), float(config.timeout["normal"]))
+        text = wait.until(lambda el: el.text)
+
+        return text
+
+    def js_click(self):
+        self.parent.execute_script("arguments[0].click();", self)
+
+    def find_element(self, *args, **kwargs):
+        """
+        :rtype: ContestoWebElement
+        :raise: ElementNotFound
+        """
+        wait = WebDriverWait(super(ContestoWebElement, self),
+                             float(config.timeout["normal"]),
+                             ignored_exceptions=WebDriverException)
+        try:
+            def available(element):
+                el = element.find_element(*args, **kwargs)
+                if el.is_displayed():
+                    return el
+
+            element = wait.until(available)
+        except TimeoutException:
+            raise ElementNotFound(kwargs["value"], kwargs["by"])
+
+        return ContestoWebElement(element)
+
+    def find_elements(self, *args, **kwargs):
+        """
+        :rtype: list of ContestoWebElement
+        :raise: ElementNotFound
+        """
+        wait = WebDriverWait(super(ContestoWebElement, self),
+                             float(config.timeout["normal"]),
+                             ignored_exceptions=WebDriverException)
+        try:
+            elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
+        except TimeoutException:
+            raise ElementNotFound(kwargs["value"], kwargs["by"])
+
+        return [ContestoWebElement(element) for element in elements]
+
+    def find_element_by_sizzle(self, sizzle_selector):
+        """
+        :type sizzle_selector: str
+        :rtype: ContestoWebElement
+        :raise: ElementNotFound
+        """
+        if not self._is_sizzle_loaded():
+            self._inject_sizzle()
+
+        wait = WebDriverWait(self, float(config.timeout["normal"]))
+        try:
+            elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
+        except TimeoutException:
+            raise ElementNotFound(sizzle_selector, "sizzle selector")
+
+        return ContestoWebElement(elements[0])
+
+    def find_elements_by_sizzle(self, sizzle_selector):
+        """
+        :type sizzle_selector: str
+        :rtype: list of ContestoWebElement
+        :raise: ElementNotFound
+        """
+        if not self._is_sizzle_loaded():
+            self._inject_sizzle()
+
+        wait = WebDriverWait(self, float(config.timeout["normal"]))
+        try:
+            elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
+        except TimeoutException:
+            raise ElementNotFound(sizzle_selector, "sizzle selector")
+
+        return [ContestoWebElement(element) for element in elements]
+
+    def _inject_sizzle(self):
+        """
+        :raise: JavaScriptInjectionError
+        """
+        ### @todo http/https
+        ### @todo static file
+        script = """
+            var _s = document.createElement("script");
+            _s.type = "text/javascript";
+            _s.src = "%s";
+            var _h = document.getElementsByTagName('head')[0];
+            _h.appendChild(_s);
+        """ % config.sizzle["url"]
+        self.parent.execute_script(script)
+        wait = WebDriverWait(self, float(config.timeout["normal"]))
+        try:
+            wait.until(lambda el: el._is_sizzle_loaded())
+        except TimeoutException:
+            raise JavaScriptInjectionError("Sizzle")
+
+    def _is_sizzle_loaded(self):
+        """
+        :rtype: bool
+        """
+        script = "return typeof(Sizzle) != \"undefined\";"
+
+        return self.parent.execute_script(script)
+
+    def _make_sizzle_string(self, sizzle_selector):
+        """
+        :rtype: str
+        """
+        ### @todo what about performance?
+        return "return Sizzle(\"%s\", arguments[0]);" % re.escape(sizzle_selector)
