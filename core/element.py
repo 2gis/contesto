@@ -121,9 +121,12 @@ class ContestoWebElement(WebElement):
 
         return self.parent.execute_script(script)
 
-    def _make_sizzle_string(self, sizzle_selector):
+    @staticmethod
+    def _make_sizzle_string(sizzle_selector):
         """
         :rtype: str
         """
-        ### @todo what about performance?
-        return "return Sizzle(\"%s\", arguments[0]);" % re.escape(sizzle_selector)
+        if isinstance(sizzle_selector, str):
+            sizzle_selector = sizzle_selector.decode("utf-8")
+
+        return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)

@@ -35,6 +35,7 @@ class ContestoDriver(Remote):
                 el = driver.find_element(*args, **kwargs)
                 if el.is_displayed():
                     return el
+
             element = wait.until(available)
         except TimeoutException:
             raise ElementNotFound(kwargs["value"], kwargs["by"])
@@ -118,9 +119,12 @@ class ContestoDriver(Remote):
 
         return self.execute_script(script)
 
-    def _make_sizzle_string(self, sizzle_selector):
+    @staticmethod
+    def _make_sizzle_string(sizzle_selector):
         """
         :rtype: str
         """
-        ### @todo what about performance?
+        if isinstance(sizzle_selector, str):
+            sizzle_selector = sizzle_selector.decode("utf-8")
+
         return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
