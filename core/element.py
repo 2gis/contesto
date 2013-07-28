@@ -33,12 +33,7 @@ class ContestoWebElement(WebElement):
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            def available(element):
-                el = element.find_element(*args, **kwargs)
-                if el.is_displayed():
-                    return el
-
-            element = wait.until(available)
+            element = wait.until(lambda el: el.find_element(*args, **kwargs))
         except TimeoutException:
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 

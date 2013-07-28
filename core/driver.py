@@ -31,12 +31,7 @@ class ContestoDriver(Remote):
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            def available(driver):
-                el = driver.find_element(*args, **kwargs)
-                if el.is_displayed():
-                    return el
-
-            element = wait.until(available)
+            element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
         except TimeoutException:
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 

@@ -53,6 +53,7 @@ class BaseTestCase(object):
     def _create_session(cls):
         """
         :rtype: ContestoDriver
+        :raise: UnknownBrowserName
         :raise: ConnectionError
         """
         try:
