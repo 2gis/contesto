@@ -124,4 +124,4 @@ class ContestoWebElement(WebElement):
         if isinstance(sizzle_selector, str):
             sizzle_selector = sizzle_selector.decode("utf-8")
 
-        return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
+        return "return Sizzle(\"%s\", arguments[0]);" % re.escape(sizzle_selector)
