@@ -1,5 +1,5 @@
 import ConfigParser
-from paths import contesto_path, app_config_path
+import os
 
 
 class Config(object):
@@ -47,8 +47,6 @@ class Config(object):
 
 
 config = Config(
-    contesto_path + "/config/config.core.ini",
-    contesto_path + "/config/config.default.ini",
-    app_config_path + "config.ini",
-    app_config_path + "config.my.ini",
+    os.path.abspath(os.path.dirname(__file__)) + "/config/config.core.ini",
+    os.path.abspath(os.path.dirname(__file__)) + "/config/config.default.ini",
 )

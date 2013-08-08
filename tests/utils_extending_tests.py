@@ -1,4 +1,4 @@
-from utils.extending import AutoExtendingSelectors
+from contesto.utils.extending import AutoExtendingSelectors
 
 
 class Foo(object):
@@ -21,7 +21,7 @@ class Baz(Bar):
     }
 
 
-class Quz(Baz):
+class Qux(Baz):
     selectors = {}
 
 
@@ -39,7 +39,7 @@ def test_autoextending_selectors():
     foo = Foo()
     bar = Bar()
     baz = Baz()
-    qux = Quz()
+    qux = Qux()
     assert dict_equals(foo.selectors, {'a': 1})
     assert dict_equals(bar.selectors, {'a': 1, 'b': 2})
     assert dict_equals(baz.selectors, {'a': 3, 'b': 2, 'c': 4})

@@ -1,4 +1,4 @@
-from utils.cached import cached, cached_property
+from contesto.utils.cached import cached, cached_property
 
 call_counter = 0
 

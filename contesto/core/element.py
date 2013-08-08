@@ -1,37 +1,41 @@
 import re
-from selenium.webdriver import Remote
+
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
-from config import config
-from core.element import ContestoWebElement
-from core.exceptions import ElementNotFound, JavaScriptInjectionError
+
+from contesto import config
+from contesto.core.exceptions import ElementNotFound, JavaScriptInjectionError
 
 
-class ContestoDriver(Remote):
-    def __init__(self, *args, **kwargs):
-        super(ContestoDriver, self).__init__(*args, **kwargs)
-        self._browser = None
+class ContestoWebElement(WebElement):
+    ### @todo class very similar to ContestoWebDriver (especially sizzle-part). Common parts in separate class
+    def __init__(self, web_element):
+        """
+        :type web_element: WebElement
+        """
+        self.__dict__.update(web_element.__dict__)
 
     @property
-    def browser(self):
-        """
-        :rtype: str
-        """
-        if self._browser is None:
-            self._browser = self.capabilities['browserName']
+    def text(self):
+        wait = WebDriverWait(super(ContestoWebElement, self), float(config.timeout["normal"]))
+        text = wait.until(lambda el: el.text)
 
-        return self._browser
+        return text
+
+    def js_click(self):
+        self.parent.execute_script("arguments[0].click();", self)
 
     def find_element(self, *args, **kwargs):
         """
         :rtype: ContestoWebElement
         :raise: ElementNotFound
         """
-        wait = WebDriverWait(super(ContestoDriver, self),
+        wait = WebDriverWait(super(ContestoWebElement, self),
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
+            element = wait.until(lambda el: el.find_element(*args, **kwargs))
         except TimeoutException:
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
@@ -42,11 +46,11 @@ class ContestoDriver(Remote):
         :rtype: list of ContestoWebElement
         :raise: ElementNotFound
         """
-        wait = WebDriverWait(super(ContestoDriver, self),
+        wait = WebDriverWait(super(ContestoWebElement, self),
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            elements = wait.until(lambda dr: dr.find_elements(*args, **kwargs))
+            elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
         except TimeoutException:
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
@@ -63,7 +67,7 @@ class ContestoDriver(Remote):
 
         wait = WebDriverWait(self, float(config.timeout["normal"]))
         try:
-            elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
+            elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
@@ -80,7 +84,7 @@ class ContestoDriver(Remote):
 
         wait = WebDriverWait(self, float(config.timeout["normal"]))
         try:
-            elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
+            elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
@@ -99,10 +103,10 @@ class ContestoDriver(Remote):
             var _h = document.getElementsByTagName('head')[0];
             _h.appendChild(_s);
         """ % config.sizzle["url"]
-        self.execute_script(script)
+        self.parent.execute_script(script)
         wait = WebDriverWait(self, float(config.timeout["normal"]))
         try:
-            wait.until(lambda dr: dr._is_sizzle_loaded())
+            wait.until(lambda el: el._is_sizzle_loaded())
         except TimeoutException:
             raise JavaScriptInjectionError("Sizzle")
 
@@ -112,7 +116,7 @@ class ContestoDriver(Remote):
         """
         script = "return typeof(Sizzle) != \"undefined\";"
 
-        return self.execute_script(script)
+        return self.parent.execute_script(script)
 
     @staticmethod
     def _make_sizzle_string(sizzle_selector):
@@ -122,4 +126,4 @@ class ContestoDriver(Remote):
         if isinstance(sizzle_selector, str):
             sizzle_selector = sizzle_selector.decode("utf-8")
 
-        return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
+        return "return Sizzle(\"%s\", arguments[0]);" % re.escape(sizzle_selector)

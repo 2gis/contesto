@@ -1,10 +1,12 @@
 import logging
 from urllib2 import URLError
+
 from selenium.webdriver import DesiredCapabilities
-from core.driver import ContestoDriver
-from config import config
-from core.exceptions import UnknownBrowserName, ConnectionError
-from utils.log import log_handler
+
+from contesto import config
+from contesto.core.driver import ContestoDriver
+from contesto.core.exceptions import UnknownBrowserName, ConnectionError
+from contesto.utils.log import log_handler
 
 
 class BaseTestCase(object):

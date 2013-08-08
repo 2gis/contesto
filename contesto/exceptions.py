@@ -32,5 +32,4 @@ class UnknownBrowserName(BaseError):
         self.browser_name, self.allowed_browsers = browser_name, allowed_browsers
 
     def __str__(self):
-        return "Browser name should be one of the following: " + str(self.allowed_browsers) + \
-               ", not a %s." % self.browser_name
+        return "Browser name should be one of the following: " + str(self.allowed_browsers) + ", not a %s." % self.browser_name

@@ -1,5 +1,5 @@
-from utils.extending import AutoExtendingSelectors
-from utils.log import trace
+from contesto.utils.extending import AutoExtendingSelectors
+from contesto.utils.log import trace
 
 
 class BaseComponent(object):

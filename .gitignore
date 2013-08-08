@@ -1,5 +1,10 @@
 ### Python ###
 *.py[cod]
 
+### Python package ###
+*.egg-info/
+build/
+dist/
+
 ### IDE ###
 .idea/
