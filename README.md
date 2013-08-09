@@ -1,6 +1,6 @@
 # Contesto
 
-### Adding a new config file.
+### Adding a new config file
 ```python
 import contesto
 

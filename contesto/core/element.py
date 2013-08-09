@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto import config
-from contesto.core.exceptions import ElementNotFound, JavaScriptInjectionError
+from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
 
 
 class ContestoWebElement(WebElement):

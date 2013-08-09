@@ -1,4 +1,3 @@
-### @todo test me
 def before(*args):
     class Before(object):
         def __init__(self, function, *args):

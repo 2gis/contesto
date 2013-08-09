@@ -1,5 +1,4 @@
 class BaseError(Exception):
-    ### @todo logging exceptions
     pass
 
 

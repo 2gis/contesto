@@ -15,7 +15,7 @@ setup_args = {
             'config/*.ini'
         ],
     },
-    "version": "0.1.0",
+    "version": "0.1.0-dev",
     "install_requires": [
         "pytest",
         "selenium",

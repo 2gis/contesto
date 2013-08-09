@@ -5,7 +5,7 @@ from selenium.webdriver import DesiredCapabilities
 
 from contesto import config
 from contesto.core.driver import ContestoDriver
-from contesto.core.exceptions import UnknownBrowserName, ConnectionError
+from contesto.exceptions import UnknownBrowserName, ConnectionError
 from contesto.utils.log import log_handler
 
 
