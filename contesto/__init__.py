@@ -7,6 +7,7 @@ class Config(object):
         "host": "",
         "port": "",
         "browser": "",
+        "platform": "",
     }
     timeout = {
         "normal": "",

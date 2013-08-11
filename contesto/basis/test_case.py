@@ -61,6 +61,7 @@ class BaseTestCase(object):
         try:
             command_executor = "http://%s:%s/wd/hub" % (config.selenium["host"], config.selenium["port"])
             desired_capabilities = cls.capabilities_map[config.selenium["browser"].lower()]
+            desired_capabilities["platform"] = config.selenium["platform"]
             return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
         except KeyError:
             raise UnknownBrowserName(config.selenium["browser"], cls.capabilities_map.keys())
