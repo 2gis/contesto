@@ -16,3 +16,7 @@ class BasePage(object):
 
     def back(self):
         self._driver.back()
+
+    @property
+    def url(self):
+        return self._driver.current_url
