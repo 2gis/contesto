@@ -32,3 +32,11 @@ class UnknownBrowserName(BaseError):
 
     def __str__(self):
         return "Browser name should be one of the following: " + str(self.allowed_browsers) + ", not a %s." % self.browser_name
+
+
+class ConfigDictionaryError(BaseError):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return "Wrong dictionary syntax in config: %s" % self.value
