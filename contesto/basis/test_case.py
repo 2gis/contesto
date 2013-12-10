@@ -113,3 +113,7 @@ class PyTestContestoTestCase(ContestoTestCase):
 
     def teardown_method(self, method):
         super(PyTestContestoTestCase, self)._teardown_test()
+
+
+# for backward compatibility
+BaseTestCase = PyTestContestoTestCase
