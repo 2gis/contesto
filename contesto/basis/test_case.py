@@ -5,7 +5,7 @@ from selenium.webdriver import DesiredCapabilities
 
 from contesto import config
 from contesto.core.driver import ContestoDriver
-from contesto.exceptions import UnknownBrowserName, ConnectionError
+from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler
 
 from unittest import TestCase
@@ -61,14 +61,21 @@ class ContestoTestCase(object):
         :raise: ConnectionError
         """
         try:
-            command_executor = "http://%s:%s/wd/hub" % (config.selenium["host"], config.selenium["port"])
-            desired_capabilities = cls.capabilities_map[config.selenium["browser"].lower()]
-            desired_capabilities["platform"] = config.selenium["platform"]
+            cls.driver_settings = getattr(config, cls._driver_type)
+        except AttributeError:
+            # for backward compatibility: HttpDriver mixin if no mixin provided
+            from .driver_mixin import HttpDriver
+            d = dict(cls.__dict__.items() + HttpDriver.__dict__.items())
+            cls.__class__.__bases__ += (HttpDriver, )
+            cls.driver_settings = getattr(config, cls._driver_type)
+
+        desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
+
+        try:
+            command_executor = "http://%s:%s/wd/hub" % (cls.driver_settings["host"], cls.driver_settings["port"])
             return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
-        except KeyError:
-            raise UnknownBrowserName(config.selenium["browser"], cls.capabilities_map.keys())
         except URLError:
-            raise ConnectionError(config.selenium["host"], config.selenium["port"])
+            raise ConnectionError(cls.driver_settings["host"], cls.driver_settings["port"])
 
     @staticmethod
     def _destroy_session(cls):
@@ -78,9 +85,7 @@ class ContestoTestCase(object):
         try:
             cls.driver.quit()
         except URLError:
-            raise ConnectionError(config.selenium["host"], config.selenium["port"])
-        except AttributeError:
-            pass
+            raise ConnectionError(cls.driver_settings["host"], cls.driver_settings["port"])
 
 
 class UnittestContestoTestCase(ContestoTestCase, TestCase):
