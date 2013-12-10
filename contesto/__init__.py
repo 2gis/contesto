@@ -1,5 +1,8 @@
 import ConfigParser
 import os
+import ast
+
+from .exceptions import ConfigDictionaryError
 
 
 class Config(object):
@@ -26,6 +29,10 @@ class Config(object):
         for ini_path in args:
             self.add_config_file(ini_path)
 
+    @staticmethod
+    def _is_dictionary(value):
+        return value.strip().startswith('{') and value.strip().endswith('}')
+
     def add_config_file(self, path_to_file):
         """
         :type path_to_file: str
@@ -40,6 +47,11 @@ class Config(object):
             d = {}
             for param in params:
                 key, value = param
+                if self._is_dictionary(value):
+                    try:
+                        value = ast.literal_eval(value)
+                    except SyntaxError:
+                        raise ConfigDictionaryError(value)
                 d[key] = value
             if hasattr(self, section):
                 getattr(self, section).update(d)
