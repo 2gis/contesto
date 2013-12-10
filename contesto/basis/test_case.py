@@ -8,8 +8,10 @@ from contesto.core.driver import ContestoDriver
 from contesto.exceptions import UnknownBrowserName, ConnectionError
 from contesto.utils.log import log_handler
 
+from unittest import TestCase
 
-class BaseTestCase(object):
+
+class ContestoTestCase(object):
     capabilities_map = {
         "firefox": DesiredCapabilities.FIREFOX,
         "internetexplorer": DesiredCapabilities.INTERNETEXPLORER,
@@ -31,23 +33,23 @@ class BaseTestCase(object):
     }
 
     @classmethod
-    def setup_class(cls):
+    def _setup_class(cls):
         if bool(int(config.session["shared"])):
             cls.driver = cls._create_session(cls)
 
     @classmethod
-    def teardown_class(cls):
+    def _teardown_class(cls):
         if bool(int(config.session["shared"])):
             cls._destroy_session(cls)
 
-    def setup_method(self, method):
+    def _setup_test(self):
         logger = logging.getLogger()
         logger.setLevel("DEBUG")
         logger.addHandler(log_handler)
         if not bool(int(config.session["shared"])):
             self.driver = self._create_session(self)
 
-    def teardown_method(self, method):
+    def _teardown_test(self):
         if not bool(int(config.session["shared"])):
             self._destroy_session(self)
 
@@ -79,3 +81,39 @@ class BaseTestCase(object):
             raise ConnectionError(config.selenium["host"], config.selenium["port"])
         except AttributeError:
             pass
+
+
+class UnittestContestoTestCase(ContestoTestCase, TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(UnittestContestoTestCase, cls)._setup_class()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(UnittestContestoTestCase, cls)._teardown_class()
+
+    def setUp(self):
+        super(UnittestContestoTestCase, self)._setup_test()
+
+    def tearDown(self):
+        super(UnittestContestoTestCase, self)._teardown_test()
+
+
+class PyTestContestoTestCase(ContestoTestCase):
+    @classmethod
+    def setup_class(cls):
+        super(PyTestContestoTestCase, cls)._setup_class()
+
+    @classmethod
+    def teardown_class(cls):
+        super(PyTestContestoTestCase, cls)._teardown_class()
+
+    def setup_method(self, method):
+        super(PyTestContestoTestCase, self)._setup_test()
+
+    def teardown_method(self, method):
+        super(PyTestContestoTestCase, self)._teardown_test()
+
+
+# for backward compatibility
+BaseTestCase = PyTestContestoTestCase

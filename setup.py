@@ -17,7 +17,6 @@ setup_args = {
     },
     "version": "0.1.0-dev",
     "install_requires": [
-        "pytest",
         "selenium",
     ],
     "license": "MIT",
