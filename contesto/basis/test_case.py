@@ -34,23 +34,23 @@ class ContestoTestCase(object):
 
     @classmethod
     def _setup_class(cls):
-        if bool(int(config.session["shared"])):
+        if config.session["shared"]:
             cls.driver = cls._create_session(cls)
 
     @classmethod
     def _teardown_class(cls):
-        if bool(int(config.session["shared"])):
+        if config.session["shared"]:
             cls._destroy_session(cls)
 
     def _setup_test(self):
         logger = logging.getLogger()
         logger.setLevel("DEBUG")
         logger.addHandler(log_handler)
-        if not bool(int(config.session["shared"])):
+        if not config.session["shared"]:
             self.driver = self._create_session(self)
 
     def _teardown_test(self):
-        if not bool(int(config.session["shared"])):
+        if not config.session["shared"]:
             self._destroy_session(self)
 
     @staticmethod
@@ -72,7 +72,7 @@ class ContestoTestCase(object):
         desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
 
         try:
-            command_executor = "http://%s:%s/wd/hub" % (cls.driver_settings["host"], cls.driver_settings["port"])
+            command_executor = "http://%s:%d/wd/hub" % (cls.driver_settings["host"], cls.driver_settings["port"])
             return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
         except URLError:
             raise ConnectionError(cls.driver_settings["host"], cls.driver_settings["port"])
