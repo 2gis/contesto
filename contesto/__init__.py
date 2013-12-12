@@ -2,10 +2,9 @@ import ConfigParser
 import os
 import ast
 
-from .exceptions import ConfigDictionaryError
-
 
 class Config(object):
+    ### @todo add method for reinitializing config
     selenium = {
         "host": "",
         "port": "",
@@ -29,15 +28,10 @@ class Config(object):
         for ini_path in args:
             self.add_config_file(ini_path)
 
-    @staticmethod
-    def _is_dictionary(value):
-        return value.strip().startswith('{') and value.strip().endswith('}')
-
     def add_config_file(self, path_to_file):
         """
         :type path_to_file: str
         """
-        ### @todo value type parsing
         parser = ConfigParser.SafeConfigParser()
         parser.read(path_to_file)
         sections = parser.sections()
@@ -47,11 +41,10 @@ class Config(object):
             d = {}
             for param in params:
                 key, value = param
-                if self._is_dictionary(value):
-                    try:
-                        value = ast.literal_eval(value)
-                    except SyntaxError:
-                        raise ConfigDictionaryError(value)
+                try:
+                    value = ast.literal_eval(value)
+                except (ValueError, SyntaxError):
+                    pass
                 d[key] = value
             if hasattr(self, section):
                 getattr(self, section).update(d)
