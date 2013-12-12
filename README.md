@@ -1,6 +1,7 @@
+[![Build Status](https://travis-ci.org/2gis/contesto.png)](https://travis-ci.org/2gis/contesto)
 # Contesto
 
-### Install using git
+### Install using pip and git
 ```bash
 pip install -U git+https://github.com/2gis/contesto.git#egg=contesto
 ```
