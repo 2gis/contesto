@@ -42,3 +42,20 @@ class QtWebkitDriver(AbstractDriver):
         desired_capabilities = dict()
         desired_capabilities['app'] = driver_settings["app"]
         return desired_capabilities
+
+
+class IosDriver(AbstractDriver):
+    _driver_type = 'iosdriver'
+
+    @classmethod
+    def _form_desired_capabilities(cls, driver_settings):
+        super(IosDriver, cls)._form_desired_capabilities(driver_settings)
+        if cls.dc_from_config:
+            return cls.dc_from_config
+
+        desired_capabilities = dict()
+        desired_capabilities['app'] = driver_settings["app"]
+        desired_capabilities['device'] = driver_settings["device"]
+        desired_capabilities['platform'] = driver_settings["platform"]
+        desired_capabilities['version'] = driver_settings["version"]
+        return desired_capabilities
