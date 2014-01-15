@@ -13,20 +13,20 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
         driver = IosDriver()
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
-        assert desired_capabilities["device"] == "iPhone Simulator"
-        assert desired_capabilities["platform"] == "Mac"
-        assert desired_capabilities["app"] == "/Users/test/app.app"
-        assert desired_capabilities["version"] == 7.0
+        self.assertEqual(desired_capabilities["device"], "iPhone Simulator", 'wrong device in capabilities in iosdriver')
+        self.assertEqual(desired_capabilities["platform"], "Mac", 'wrong platform in capabilities in iosdriver')
+        self.assertEqual(desired_capabilities["app"], "/Users/test/app.app", 'wrong app in capabilities in iosdriver')
+        self.assertEqual(desired_capabilities["version"], 7.0, 'wrong version in capabilities in iosdriver')
 
     def test_http_driver(self):
         driver = HttpDriver()
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
-        assert desired_capabilities["browser"] == "firefox"
-        assert desired_capabilities["platform"] == "ANY"
+        self.assertEqual(desired_capabilities["browser"], "firefox", 'wrong browser in capabilities in httpdriver')
+        self.assertEqual(desired_capabilities["platform"], "ANY", 'wrong platform in capabilities in httpdriver')
 
     def test_qtwebkit_driver(self):
         driver = QtWebkitDriver()
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
-        assert desired_capabilities["app"] == "/Users/test/app"
+        self.assertEqual(desired_capabilities["app"], "/Users/test/app", 'wrong platform in capabilities in qtwebkitdriver')
