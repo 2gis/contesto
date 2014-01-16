@@ -1,8 +1,6 @@
 import logging
 from urllib2 import URLError
 
-from selenium.webdriver import DesiredCapabilities
-
 from contesto import config
 from contesto.core.driver import ContestoDriver
 from contesto.exceptions import ConnectionError
@@ -12,25 +10,6 @@ from unittest import TestCase
 
 
 class ContestoTestCase(object):
-    capabilities_map = {
-        "firefox": DesiredCapabilities.FIREFOX,
-        "internetexplorer": DesiredCapabilities.INTERNETEXPLORER,
-        "chrome": DesiredCapabilities.CHROME,
-        "opera": DesiredCapabilities.OPERA,
-        "safari": DesiredCapabilities.SAFARI,
-        "htmlunit": DesiredCapabilities.HTMLUNIT,
-        "htmlunitjs": DesiredCapabilities.HTMLUNITWITHJS,
-        "iphone": DesiredCapabilities.IPHONE,
-        "ipad": DesiredCapabilities.IPAD,
-        "android": DesiredCapabilities.ANDROID,
-        "phantomjs": DesiredCapabilities.PHANTOMJS,
-        ### aliases:
-        "ff": DesiredCapabilities.FIREFOX,
-        "internet explorer": DesiredCapabilities.INTERNETEXPLORER,
-        "iexplore": DesiredCapabilities.INTERNETEXPLORER,
-        "ie": DesiredCapabilities.INTERNETEXPLORER,
-        "phantom": DesiredCapabilities.PHANTOMJS,
-    }
 
     @classmethod
     def _setup_class(cls):
