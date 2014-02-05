@@ -1,5 +1,5 @@
 from mock import Mock
-from contesto.basis.page import WebPage, Page
+from contesto.basis.page import WebPage, Page, BasePage
 import unittest
 
 class PageTestCase(unittest.TestCase):
@@ -16,5 +16,10 @@ class PageTestCase(unittest.TestCase):
     def test_web_page(self):
         page = WebPage(self.driver)
         self.assertEqual(page.url, "http://current_url/")
+
+    def test_backward_compatibility_base_page(self):
+        page = BasePage(self.driver)
+        self.assertEqual(page.url, "http://current_url/")
+
 
 
