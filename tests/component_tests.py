@@ -8,6 +8,7 @@ class TestComponent(BaseComponent):
         super(TestComponent, self).__init__(test, element)
         self.test = self.driver
 
+
 class PageTestCase(unittest.TestCase):
 
     def setUp(self):

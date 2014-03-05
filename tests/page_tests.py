@@ -2,6 +2,7 @@ from mock import Mock
 from contesto.basis.page import WebPage, Page, BasePage
 import unittest
 
+
 class PageTestCase(unittest.TestCase):
 
     def setUp(self):

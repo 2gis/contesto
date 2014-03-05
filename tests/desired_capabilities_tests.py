@@ -4,6 +4,7 @@ from contesto import config
 import os
 import unittest
 
+
 class DesireCapabilitiesTestCase(unittest.TestCase):
 
     def setUp(self):
