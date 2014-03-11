@@ -11,11 +11,11 @@ class ElementNotFound(BaseError):
 
 
 class ConnectionError(BaseError):
-    def __init__(self, host, port):
-        self.host, self.port = host, port
+    def __init__(self, command_executor):
+        self.command_executor = command_executor
 
     def __str__(self):
-        return "It seems, Selenium Server is not running on http://%s:%s" % (self.host, self.port)
+        return "It seems, Selenium Server is not running on %s" % self.command_executor
 
 
 class JavaScriptInjectionError(BaseError):
