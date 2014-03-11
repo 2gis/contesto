@@ -1,12 +1,12 @@
 import logging
 from urllib2 import URLError
+from unittest import TestCase
 
 from contesto import config
 from contesto.core.driver import ContestoDriver
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler
-
-from unittest import TestCase
+from .driver_mixin import HttpDriver
 
 
 class ContestoTestCase(object):
@@ -43,18 +43,30 @@ class ContestoTestCase(object):
             cls.driver_settings = getattr(config, cls._driver_type)
         except AttributeError:
             # for backward compatibility: HttpDriver mixin if no mixin provided
-            from .driver_mixin import HttpDriver
-            d = dict(cls.__dict__.items() + HttpDriver.__dict__.items())
-            cls.__class__.__bases__ += (HttpDriver, )
+            if isinstance(cls, type):
+                cls.__bases__ += (HttpDriver, )
+            else:
+                cls.__class__.__bases__ += (HttpDriver, )
             cls.driver_settings = getattr(config, cls._driver_type)
 
         desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
 
+        host = cls.driver_settings["host"]
+        port = cls.driver_settings["port"]
+        if hasattr(cls.driver_settings, "prefix"):
+            prefix = cls.driver_settings["prefix"]
+        else:
+            prefix = 'wd/hub'
+
+        return cls._start_driver(desired_capabilities, host, port, prefix)
+
+    @staticmethod
+    def _start_driver(desired_capabilities, host, port, prefix):
         try:
-            command_executor = "http://%s:%d/wd/hub" % (cls.driver_settings["host"], cls.driver_settings["port"])
+            command_executor = "http://%s:%d/%s" % (host, port, prefix)
             return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
         except URLError:
-            raise ConnectionError(cls.driver_settings["host"], cls.driver_settings["port"])
+            raise ConnectionError(command_executor)
 
     @staticmethod
     def _destroy_session(cls):
