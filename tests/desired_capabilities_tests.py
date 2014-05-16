@@ -23,7 +23,8 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
         driver = HttpDriver()
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
-        self.assertEqual(desired_capabilities["browser"], "firefox", 'wrong browser in capabilities in httpdriver')
+        self.assertEqual(desired_capabilities["browserName"], "firefox", 'wrong browser in capabilities in httpdriver')
+        self.assertEqual(desired_capabilities["version"], "", 'wrong version in capabilities in httpdriver')
         self.assertEqual(desired_capabilities["platform"], "ANY", 'wrong platform in capabilities in httpdriver')
 
     def test_qtwebkit_driver(self):

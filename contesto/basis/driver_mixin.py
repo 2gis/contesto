@@ -47,8 +47,12 @@ class HttpDriver(AbstractDriver):
             desired_capabilities = cls.capabilities_map[driver_settings["browser"].lower()]
         except KeyError:
             raise UnknownBrowserName(driver_settings.selenium["browser"], cls.capabilities_map.keys())
-        for key in driver_settings:
-            desired_capabilities[key] = driver_settings[key]
+
+        for key, value in driver_settings.iteritems():
+        ### todo IEDriver becomes insane with host/port parameters in desired_capabilities, need investigation
+            if key not in ('host', 'port'):
+                desired_capabilities[key] = value
+
         return desired_capabilities
 
 
