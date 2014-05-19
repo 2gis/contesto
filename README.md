@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/2gis/contesto.png)](https://travis-ci.org/2gis/contesto)
 # Contesto
+[![Build Status](https://travis-ci.org/2gis/contesto.svg?branch=master)](https://travis-ci.org/2gis/contesto)
 
 ### Install using pip and git
 ```bash
