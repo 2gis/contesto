@@ -1,4 +1,4 @@
-from contesto.basis.driver_mixin import HttpDriver, IosDriver,QtWebkitDriver
+from contesto.basis.driver_mixin import HttpDriver, IosDriver, QtWebkitDriver
 from contesto import config
 
 import os
@@ -6,7 +6,6 @@ import unittest
 
 
 class DesireCapabilitiesTestCase(unittest.TestCase):
-
     def setUp(self):
         config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/drivers.ini")
 
@@ -32,3 +31,18 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         self.assertEqual(desired_capabilities["app"], "/Users/test/app", 'wrong platform in capabilities in qtwebkitdriver')
+
+
+class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
+    def setUp(self):
+        config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
+
+    def test_dictionary_desired_capabilities(self):
+        dc = {
+            "browserName": "firefox",
+            "platform": "LINUX"
+        }
+        driver = HttpDriver()
+        driver_settings = getattr(config, driver._driver_type)
+        desired_capabilities = driver._form_desired_capabilities(driver_settings)
+        self.assertEqual(desired_capabilities, dc)
