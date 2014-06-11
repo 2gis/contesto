@@ -59,11 +59,11 @@ class ContestoTestCase(object):
         else:
             prefix = '/wd/hub'
 
-        command_executor = cls._get_command_executor(cls.driver_settings)
+        command_executor = cls._form_command_executor(cls.driver_settings)
         return cls._start_driver(desired_capabilities, command_executor)
 
     @staticmethod
-    def _get_command_executor(driver_settings):
+    def _form_command_executor(driver_settings):
         host = driver_settings["host"]
         port = driver_settings["port"]
         if "prefix" in driver_settings.keys():
@@ -72,8 +72,8 @@ class ContestoTestCase(object):
                 prefix = '/' + prefix
         else:
             prefix = '/wd/hub'
-        command_executor = "http://%s:%d%s" % (host, port, prefix)
-        return command_executor
+        command_executor = "http://%s:%d/%s" % (host, port, prefix.strip('/'))
+        return command_executor.rstrip('/')
 
     @staticmethod
     def _start_driver(desired_capabilities, command_executor):

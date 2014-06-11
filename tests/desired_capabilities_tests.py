@@ -58,17 +58,17 @@ class DesiredWebDriverPrefixTestCase(unittest.TestCase):
 
     def test_default_prefix(self):
         driver_settings = self.common_driver_settings
-        command_executor = ContestoTestCase._get_command_executor(driver_settings)
-        self.assertEqual(command_executor, self.common_url + '/wd/hub')
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url + '/wd/hub', command_executor)
 
     def test_empty_prefix(self):
         driver_settings = self.common_driver_settings
         driver_settings['prefix'] = str()
-        command_executor = ContestoTestCase._get_command_executor(driver_settings)
-        self.assertEqual(command_executor, self.common_url)
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url, command_executor)
 
     def test_custom_prefix(self):
         driver_settings = self.common_driver_settings
         driver_settings['prefix'] = 'test'
-        command_executor = ContestoTestCase._get_command_executor(driver_settings)
-        self.assertEqual(command_executor, self.common_url + '/test')
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url + '/test', command_executor)
