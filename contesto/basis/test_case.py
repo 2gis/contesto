@@ -59,12 +59,25 @@ class ContestoTestCase(object):
         else:
             prefix = '/wd/hub'
 
-        return cls._start_driver(desired_capabilities, host, port, prefix)
+        command_executor = cls._get_command_executor(cls.driver_settings)
+        return cls._start_driver(desired_capabilities, command_executor)
 
     @staticmethod
-    def _start_driver(desired_capabilities, host, port, prefix):
+    def _get_command_executor(driver_settings):
+        host = driver_settings["host"]
+        port = driver_settings["port"]
+        if "prefix" in driver_settings.keys():
+            prefix = driver_settings["prefix"].strip()
+            if len(prefix) > 0 and not prefix.startswith('/'):
+                prefix = '/' + prefix
+        else:
+            prefix = '/wd/hub'
+        command_executor = "http://%s:%d%s" % (host, port, prefix)
+        return command_executor
+
+    @staticmethod
+    def _start_driver(desired_capabilities, command_executor):
         try:
-            command_executor = "http://%s:%d%s" % (host, port, prefix)
             return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
         except URLError:
             raise ConnectionError(command_executor)
