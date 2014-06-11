@@ -1,5 +1,6 @@
 from contesto.basis.driver_mixin import HttpDriver, IosDriver, QtWebkitDriver
 from contesto import config
+from contesto.basis.test_case import ContestoTestCase
 
 import os
 import unittest
@@ -46,3 +47,28 @@ class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         self.assertEqual(desired_capabilities, dc)
+
+
+class DesiredWebDriverPrefixTestCase(unittest.TestCase):
+    def setUp(self):
+        self.common_driver_settings = {'host': 'localhost', 'port': 4444}
+        host = self.common_driver_settings['host']
+        port = self.common_driver_settings['port']
+        self.common_url = "http://%s:%d" % (host, port)
+
+    def test_default_prefix(self):
+        driver_settings = self.common_driver_settings
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url + '/wd/hub', command_executor)
+
+    def test_empty_prefix(self):
+        driver_settings = self.common_driver_settings
+        driver_settings['prefix'] = str()
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url, command_executor)
+
+    def test_custom_prefix(self):
+        driver_settings = self.common_driver_settings
+        driver_settings['prefix'] = 'test'
+        command_executor = ContestoTestCase._form_command_executor(driver_settings)
+        self.assertEqual(self.common_url + '/test', command_executor)

@@ -46,3 +46,4 @@ def test_complex_param():
     assert config.complex["bool"] is True
     assert config.complex["dict"] == {"a": 1, "b": 2}
     assert config.complex["list"] == [1, 2, 3]
+    assert config.complex["empty_string"] == str()
