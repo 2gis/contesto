@@ -1,6 +1,6 @@
 from contesto.exceptions import UnknownBrowserName
-
 from selenium.webdriver import DesiredCapabilities
+from contesto import config
 
 
 class AbstractDriver(object):
@@ -52,6 +52,9 @@ class HttpDriver(AbstractDriver):
         ### todo IEDriver becomes insane with host/port parameters in desired_capabilities, need investigation
             if key not in ('host', 'port'):
                 desired_capabilities[key] = value
+
+        if config.browsermobproxy['enabled']:
+            cls.bmproxy.webdriver_proxy().add_to_capabilities(desired_capabilities)
 
         return desired_capabilities
 

@@ -7,18 +7,23 @@ from contesto.core.driver import ContestoDriver
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler
 from .driver_mixin import HttpDriver
+from browsermobproxy import Client
 
 
 class ContestoTestCase(object):
     @classmethod
     def _setup_class(cls):
         if config.session["shared"]:
+            if config.browsermobproxy['enabled']:
+                cls.bmproxy = cls._start_proxy()
             cls.driver = cls._create_session(cls)
 
     @classmethod
     def _teardown_class(cls):
         if config.session["shared"]:
             cls._destroy_session(cls)
+            if config.browsermobproxy['enabled']:
+                cls._stop_proxy(cls)
 
     def _setup_test(self):
         logger = logging.getLogger()
@@ -30,6 +35,14 @@ class ContestoTestCase(object):
     def _teardown_test(self):
         if not config.session["shared"]:
             self._destroy_session(self)
+
+    @staticmethod
+    def _start_proxy():
+        return Client(config.browsermobproxy['url'])
+
+    @staticmethod
+    def _stop_proxy(cls):
+        cls.bmproxy.close()
 
     @staticmethod
     def _create_session(cls):
@@ -49,17 +62,8 @@ class ContestoTestCase(object):
             cls.driver_settings = getattr(config, cls._driver_type)
 
         desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
-
-        host = cls.driver_settings["host"]
-        port = cls.driver_settings["port"]
-        if "prefix" in cls.driver_settings.keys():
-            prefix = cls.driver_settings["prefix"].strip()
-            if len(prefix) > 0 and not prefix.startswith('/'):
-                prefix = '/' + prefix
-        else:
-            prefix = '/wd/hub'
-
         command_executor = cls._form_command_executor(cls.driver_settings)
+
         return cls._start_driver(desired_capabilities, command_executor)
 
     @staticmethod
