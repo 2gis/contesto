@@ -42,7 +42,7 @@ class WebPage(Page):
 class IosScreen(Page):
 
     def scroll_page(self, x, y):
-        TouchActions(self._driver).flick(x,y).perform()
+        TouchActions(self._driver).flick(x, y).perform()
 
 BasePage = WebPage
 

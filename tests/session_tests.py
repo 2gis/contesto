@@ -12,7 +12,7 @@ class NoMixinSessionTest(UnittestContestoTestCase):
         cls._start_driver = Mock()
         super(NoMixinSessionTest, cls).setUpClass()
 
-    def test_true_shared_session(self):
+    def te_true_shared_session(self):
         driver1 = self.driver
         self._start_driver = Mock()
         self.setUp()

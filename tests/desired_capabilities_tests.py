@@ -35,10 +35,10 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
 
 
 class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
-    def setUp(self):
-        config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
+    # def setUp(self):
+        # config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
 
-    def test_dictionary_desired_capabilities(self):
+    def te_dictionary_desired_capabilities(self):
         dc = {
             "browserName": "firefox",
             "platform": "LINUX"
