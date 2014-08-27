@@ -2,10 +2,13 @@ from contesto.basis.driver_mixin import HttpDriver
 from contesto import Config
 from selenium.webdriver import Proxy
 from mock import patch
-from browsermobproxy import Client
-
 import os
 import unittest
+
+try:
+    from browsermobproxy import Client as BMPClient
+except ImportError:
+    BMPClient = None
 
 
 class ProxyInDesireCapabilitiesTestCase(unittest.TestCase):
@@ -13,7 +16,7 @@ class ProxyInDesireCapabilitiesTestCase(unittest.TestCase):
     ### @todo mock config files (data/config/*.ini)
     cfg.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/dc_with_proxy.ini")
 
-    @patch(__name__ + '.Client')
+    @patch(__name__ + '.BMPClient')
     def test_proxy_in_desired_capabilities(self, MockClient):
         proxy_host = self.cfg.browsermobproxy['url'].split(':')[0] + ':' + '9091'
         proxy_params = {
@@ -29,7 +32,7 @@ class ProxyInDesireCapabilitiesTestCase(unittest.TestCase):
         instance = MockClient.return_value
         instance.proxy = proxy_host
 
-        HttpDriver.bmproxy = Client(self.cfg.browsermobproxy['url'])
+        HttpDriver.bmproxy = BMPClient(self.cfg.browsermobproxy['url'])
 
         HttpDriver.bmproxy.webdriver_proxy.return_value = Proxy({
             "httpProxy": HttpDriver.bmproxy.proxy,

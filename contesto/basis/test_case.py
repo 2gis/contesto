@@ -7,7 +7,11 @@ from contesto.core.driver import ContestoDriver
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler
 from .driver_mixin import HttpDriver
-from browsermobproxy import Client
+
+try:
+    from browsermobproxy import Client as BMPClient
+except ImportError:
+    BMPClient = None
 
 
 class ContestoTestCase(object):
@@ -38,7 +42,10 @@ class ContestoTestCase(object):
 
     @staticmethod
     def _start_proxy():
-        return Client(config.browsermobproxy['url'])
+        if BMPClient is not None:
+            return BMPClient(config.browsermobproxy['url'])
+        else:
+            raise ImportError
 
     @staticmethod
     def _stop_proxy(cls):
