@@ -1,11 +1,12 @@
 import logging
+import sys
 from urllib2 import URLError
 from unittest import TestCase
 
 from contesto import config
 from contesto.core.driver import ContestoDriver
 from contesto.exceptions import ConnectionError
-from contesto.utils.log import log_handler
+from contesto.utils.log import log_handler, log
 from .driver_mixin import HttpDriver
 
 
@@ -26,6 +27,9 @@ class ContestoTestCase(object):
         logger.addHandler(log_handler)
         if not config.session["shared"]:
             self.driver = self._create_session(self)
+        log.env("sessionId: %s", self.driver.session_id)
+        capabilities = "\n".join(["%-30s: %s" % c for c in self.driver.capabilities.items()])
+        log.env("capabilities: \n%s" % capabilities)
 
     def _teardown_test(self):
         if not config.session["shared"]:
@@ -78,7 +82,9 @@ class ContestoTestCase(object):
     @staticmethod
     def _start_driver(desired_capabilities, command_executor):
         try:
-            return ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
+            log.init("starting session...")
+            driver = ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
+            return driver
         except URLError:
             raise ConnectionError(command_executor)
 

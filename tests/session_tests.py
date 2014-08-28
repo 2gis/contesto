@@ -9,7 +9,7 @@ config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/confi
 class NoMixinSessionTest(UnittestContestoTestCase):
     @classmethod
     def setUpClass(cls):
-        cls._start_driver = Mock()
+        cls._start_driver = Mock(return_value=Mock(capabilities={}))
         super(NoMixinSessionTest, cls).setUpClass()
 
     def test_true_shared_session(self):
@@ -25,7 +25,7 @@ class NoMixinNoSharedSessionTest(UnittestContestoTestCase):
     @classmethod
     def setUpClass(cls):
         config.session["shared"] = False
-        cls._start_driver = Mock()
+        cls._start_driver = Mock(return_value=Mock(capabilities={}))
         super(NoMixinNoSharedSessionTest, cls).setUpClass()
 
     @classmethod
@@ -34,7 +34,7 @@ class NoMixinNoSharedSessionTest(UnittestContestoTestCase):
 
     def test_false_shared_session(self):
         driver1 = self.driver
-        self._start_driver = Mock()
+        self._start_driver = Mock(return_value=Mock(capabilities={}))
         self.setUp()
         driver2 = self.driver
         self.assertNotEqual(driver1, driver2)
