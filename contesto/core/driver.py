@@ -13,10 +13,9 @@ from ..utils.log import log
 
 
 class ContestoDriver(Remote):
-    element_map = dict()
-
     def __init__(self, *args, **kwargs):
         super(ContestoDriver, self).__init__(*args, **kwargs)
+        self.element_map = dict()
         self._browser = None
 
     def __has_to_log_command(self, driver_command):
@@ -32,7 +31,7 @@ class ContestoDriver(Remote):
         command_info = self.command_executor._commands.get(driver_command)
         info = ""
         if "element" in command_info[1].split('/'):
-            info += "[%s]" % self.element_map[params["id"]][1]
+            info += "[%s][%s]" % (self.element_map[params["id"]][1], params["id"])
 
         if driver_command.startswith("sendKeys"):
             info += " [%s]" % "".join(params['value'])
@@ -49,6 +48,10 @@ class ContestoDriver(Remote):
         result = super(ContestoDriver, self).execute(driver_command, params)
         if isinstance(result.get("value", None), WebElement):
             self.element_map[result.get("value", None).id] = (params['using'], params['value'])
+        if isinstance(result.get("value", None), list):
+            for element in result.get("value", None):
+                if isinstance(element, WebElement):
+                    self.element_map[element.id] = (params['using'], params['value'])
         return result
 
     @property
