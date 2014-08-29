@@ -1,6 +1,7 @@
 import inspect
 import logging
 import json
+import sys
 
 
 def trace(cls):
@@ -73,3 +74,98 @@ class ContestoLogHandler(logging.Handler):
 
 
 log_handler = ContestoLogHandler()
+
+
+INDENT = {
+    'INIT': 0,
+    'ENV': 1,
+    'ACTION': 2,
+}
+
+
+class StdoutHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            fs = "%s\n"
+            try:
+                if (isinstance(msg, unicode) and
+                    getattr(sys.stdout, 'encoding', None)):
+                    ufs = u'%s\n'
+                    try:
+                        sys.stdout.write(ufs % msg)
+                    except UnicodeEncodeError:
+                        #Printing to terminals sometimes fails. For example,
+                        #with an encoding of 'cp1251', the above write will
+                        #work if written to a stream opened or wrapped by
+                        #the codecs module, but fail when writing to a
+                        #terminal even when the codepage is set to cp1251.
+                        #An extra encoding step seems to be needed.
+                        sys.stdout.write((ufs % msg).encode(sys.stdout.encoding))
+                else:
+                    sys.stdout.write(fs % msg)
+            except UnicodeError:
+                sys.stdout.write(fs % msg.encode("UTF-8"))
+            sys.stdout.flush()
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            self.handleError(record)
+
+
+class IndentFormatter(logging.Formatter):
+    indent = "  "
+
+    def __init__(self, msg):
+        logging.Formatter.__init__(self, msg)
+
+    def format(self, record):
+        levelname = record.levelname
+        if levelname in INDENT:
+            indent_levelname = (INDENT[levelname]) * self.indent + levelname
+            record.levelname = indent_levelname
+        return logging.Formatter.format(self, record)
+
+
+class IndentLogger(logging.Logger):
+    FORMAT = "%(levelname)s :: %(message)s"
+
+    def __init__(self, name):
+        logging.Logger.__init__(self, name, logging.DEBUG)
+
+        indent_formatter = IndentFormatter(self.FORMAT)
+
+        console = StdoutHandler()
+        console.setFormatter(indent_formatter)
+
+        self.addHandler(console)
+        return
+
+
+logging.setLoggerClass(IndentLogger)
+
+INIT_LEVEL = 17
+ENV_LEVEL = 18
+ACTION_LEVEL = 19
+logging.addLevelName(INIT_LEVEL, "INIT")
+logging.addLevelName(ACTION_LEVEL, "ACTION")
+logging.addLevelName(ENV_LEVEL, "ENV")
+
+
+def init(self, message, *args, **kws):
+    self._log(INIT_LEVEL, message, args, **kws)
+
+
+def action(self, message, *args, **kws):
+    self._log(ACTION_LEVEL, message, args, **kws)
+
+
+def env(self, message, *args, **kws):
+    self._log(ENV_LEVEL, message, args, **kws)
+
+
+logging.Logger.init = init
+logging.Logger.action = action
+logging.Logger.env = env
+
+log = logging.getLogger("TEST")

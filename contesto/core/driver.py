@@ -1,6 +1,7 @@
 import re
 
 from selenium.webdriver import Remote
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
@@ -8,11 +9,47 @@ from contesto import config
 from contesto.core.element import ContestoWebElement
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
 
+from ..utils.log import log
+
 
 class ContestoDriver(Remote):
+    element_map = dict()
+
     def __init__(self, *args, **kwargs):
         super(ContestoDriver, self).__init__(*args, **kwargs)
         self._browser = None
+
+    def __has_to_log_command(self, driver_command):
+        command_info = self.command_executor._commands.get(driver_command)
+        if command_info[0] not in ["POST", "DELETE"]:
+            return False
+        if command_info[1].split('/')[-1] in ["session", "element", "elements"]:
+            return False
+
+        return True
+
+    def __action_line(self, driver_command, params):
+        command_info = self.command_executor._commands.get(driver_command)
+        info = ""
+        if "element" in command_info[1].split('/'):
+            info += "[%s]" % self.element_map[params["id"]][1]
+
+        if driver_command.startswith("sendKeys"):
+            info += " [%s]" % "".join(params['value'])
+
+        line = "%-20s %s"
+        if info:
+            return line % (driver_command, info)
+        else:
+            return line % (driver_command, params)
+
+    def execute(self, driver_command, params=None):
+        if self.__has_to_log_command(driver_command):
+            log.action(self.__action_line(driver_command, params))
+        result = super(ContestoDriver, self).execute(driver_command, params)
+        if isinstance(result.get("value", None), WebElement):
+            self.element_map[result.get("value", None).id] = (params['using'], params['value'])
+        return result
 
     @property
     def browser(self):
