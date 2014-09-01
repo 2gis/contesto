@@ -36,6 +36,9 @@ class ContestoDriver(Remote):
         if driver_command.startswith("sendKeys"):
             info += " [%s]" % "".join(params['value'])
 
+        if driver_command == "get":
+            info += "[%s]" % params['url']
+
         line = "%-20s %s"
         if info:
             return line % (driver_command, info)
@@ -43,15 +46,21 @@ class ContestoDriver(Remote):
             return line % (driver_command, params)
 
     def execute(self, driver_command, params=None):
+        def get_element_info(params):
+            try:
+                return params['using'], params['value']
+            except KeyError:
+                return params
+
         if self.__has_to_log_command(driver_command):
             log.action(self.__action_line(driver_command, params))
         result = super(ContestoDriver, self).execute(driver_command, params)
         if isinstance(result.get("value", None), WebElement):
-            self.element_map[result.get("value", None).id] = (params['using'], params['value'])
+            self.element_map[result.get("value", None).id] = get_element_info(params)
         if isinstance(result.get("value", None), list):
             for element in result.get("value", None):
                 if isinstance(element, WebElement):
-                    self.element_map[element.id] = (params['using'], params['value'])
+                    self.element_map[element.id] = get_element_info(params)
         return result
 
     @property
