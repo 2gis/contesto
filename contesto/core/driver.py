@@ -47,10 +47,7 @@ class ContestoDriver(Remote):
 
     def execute(self, driver_command, params=None):
         def get_element_info(params):
-            try:
-                return params['using'], params['value']
-            except KeyError:
-                return params
+            return params.get('using', params), params.get('value', params)
 
         if self.__has_to_log_command(driver_command):
             log.action(self.__action_line(driver_command, params))
