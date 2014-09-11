@@ -48,6 +48,9 @@ class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         self.assertEqual(desired_capabilities, dc)
 
+    def tearDown(self):
+        del config.selenium['desired_capabilities']
+
 
 class DesiredWebDriverPrefixTestCase(unittest.TestCase):
     def setUp(self):

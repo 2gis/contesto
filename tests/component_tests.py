@@ -20,10 +20,10 @@ class PageTestCase(unittest.TestCase):
         self.assertEqual(component.element, None)
 
     def test_component_with_element(self):
-        component = BaseComponent(self.driver,self.element)
+        component = BaseComponent(self.driver, self.element)
         self.assertEqual(component.element, self.element)
 
     def test_extend_component(self):
-        component = TestComponent(self.driver,self.element)
+        component = TestComponent(self.driver, self.element)
         self.assertEqual(component.element, self.element)
         self.assertEqual(component.test, self.driver)

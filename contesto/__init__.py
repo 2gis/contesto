@@ -11,6 +11,10 @@ class Config(object):
         "browser": "",
         "platform": "",
     }
+    browsermobproxy = {
+        'enabled': "",
+        'url': "",
+    }
     timeout = {
         "normal": "",
     }
