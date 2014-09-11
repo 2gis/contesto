@@ -35,10 +35,10 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
 
 
 class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
-    # def setUp(self):
-        # config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
+    def setUp(self):
+        config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
 
-    def te_dictionary_desired_capabilities(self):
+    def test_dictionary_desired_capabilities(self):
         dc = {
             "browserName": "firefox",
             "platform": "LINUX"
@@ -47,6 +47,9 @@ class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
         driver_settings = getattr(config, driver._driver_type)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         self.assertEqual(desired_capabilities, dc)
+
+    def tearDown(self):
+        del config.selenium['desired_capabilities']
 
 
 class DesiredWebDriverPrefixTestCase(unittest.TestCase):
