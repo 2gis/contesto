@@ -26,9 +26,9 @@ class ContestoTestCase(object):
     @classmethod
     def _teardown_class(cls):
         if config.session["shared"]:
-            cls._destroy_session(cls)
             if config.browsermobproxy['enabled']:
                 cls._stop_proxy(cls)
+            cls._destroy_session(cls)
 
     def _setup_test(self):
         logger = logging.getLogger()
