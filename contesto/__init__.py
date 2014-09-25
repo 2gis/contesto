@@ -24,9 +24,6 @@ class Config(object):
     sizzle = {
         "url": "",
     }
-    utils = {
-        "save_screenshots": "",
-    }
 
     def __init__(self, *args):
         """
