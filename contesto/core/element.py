@@ -6,6 +6,7 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto import config
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
+from ..utils.utils import make_screenshot_
 
 
 class ContestoWebElement(WebElement):
@@ -26,6 +27,10 @@ class ContestoWebElement(WebElement):
     def js_click(self):
         self.parent.execute_script("arguments[0].click();", self)
 
+    def make_screenshot(self, file_='screenshots/'):
+        if config.utils['save_screenshots']:
+            make_screenshot_(self, path=file_)
+
     def find_element(self, *args, **kwargs):
         """
         :rtype: ContestoWebElement
@@ -37,6 +42,7 @@ class ContestoWebElement(WebElement):
         try:
             element = wait.until(lambda el: el.find_element(*args, **kwargs))
         except TimeoutException:
+            self.make_screenshot()
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
         return ContestoWebElement(element)
@@ -52,6 +58,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
         except TimeoutException:
+            self.save_screenshot()
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
         return [ContestoWebElement(element) for element in elements]
@@ -69,6 +76,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
+            self.save_screenshot()
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
         return ContestoWebElement(elements[0])
@@ -86,6 +94,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
+            self.save_screenshot()
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
         return [ContestoWebElement(element) for element in elements]
@@ -108,6 +117,7 @@ class ContestoWebElement(WebElement):
         try:
             wait.until(lambda el: el._is_sizzle_loaded())
         except TimeoutException:
+            self.save_screenshot()
             raise JavaScriptInjectionError("Sizzle")
 
     def _is_sizzle_loaded(self):
