@@ -2,6 +2,7 @@
 .env
 venv
 env
+screenshots/*.png
 
 ### Python ###
 *.py[cod]
