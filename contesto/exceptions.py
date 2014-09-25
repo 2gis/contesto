@@ -1,12 +1,22 @@
+from utils.utils import make_screenshot_
+from contesto import config
+
+
 class BaseError(Exception):
     pass
 
 
 class ElementNotFound(BaseError):
-    def __init__(self, value, by):
-        self.value, self.by = value, by
+    def __init__(self, value, by, driver=None):
+        self.value, self.by, self.driver = value, by, driver
+
+    def make_screenshot_(self):
+        if config.utils['save_screenshots']:
+            if self.driver is not None:
+                make_screenshot_(self.driver, path='screenshots/')
 
     def __str__(self):
+        self.make_screenshot_()
         return "Element '%s' not found by '%s'" % (self.value, self.by)
 
 
