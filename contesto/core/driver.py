@@ -81,11 +81,7 @@ class ContestoDriver(Remote):
         try:
             element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
-=======
             raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return ContestoWebElement(element)
 
@@ -100,11 +96,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.find_elements(*args, **kwargs))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
-=======
             raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return [ContestoWebElement(element) for element in elements]
 
@@ -121,11 +113,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
-=======
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return ContestoWebElement(elements[0])
 
@@ -142,11 +130,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
-=======
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return [ContestoWebElement(element) for element in elements]
 

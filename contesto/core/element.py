@@ -6,13 +6,9 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto import config
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
-<<<<<<< HEAD
-=======
-from selenium.webdriver import Remote
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
 
-class ContestoWebElement(WebElement, Remote):
+class ContestoWebElement(WebElement):
     ### @todo class very similar to ContestoWebDriver (especially sizzle-part). Common parts in separate class
     def __init__(self, web_element):
         """
@@ -41,11 +37,7 @@ class ContestoWebElement(WebElement, Remote):
         try:
             element = wait.until(lambda el: el.find_element(*args, **kwargs))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
-=======
             raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return ContestoWebElement(element)
 
@@ -60,11 +52,7 @@ class ContestoWebElement(WebElement, Remote):
         try:
             elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
-=======
             raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return [ContestoWebElement(element) for element in elements]
 
@@ -81,11 +69,7 @@ class ContestoWebElement(WebElement, Remote):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
-=======
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return ContestoWebElement(elements[0])
 
@@ -102,11 +86,7 @@ class ContestoWebElement(WebElement, Remote):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
-<<<<<<< HEAD
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
-=======
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
->>>>>>> e09e665... ONLINE-4614-add-saving-screenshots
 
         return [ContestoWebElement(element) for element in elements]
 
