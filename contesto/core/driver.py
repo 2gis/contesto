@@ -10,6 +10,7 @@ from contesto.core.element import ContestoWebElement
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
 
 from ..utils.log import log
+from ..utils.utils import save_screenshot_
 
 
 class ContestoDriver(Remote):
@@ -81,6 +82,7 @@ class ContestoDriver(Remote):
         try:
             element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
         except TimeoutException:
+            save_screenshot_(driver=self, path='screenshots/')
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
         return ContestoWebElement(element)
@@ -96,6 +98,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.find_elements(*args, **kwargs))
         except TimeoutException:
+            save_screenshot_(driver=self, path='screenshots/')
             raise ElementNotFound(kwargs["value"], kwargs["by"])
 
         return [ContestoWebElement(element) for element in elements]
@@ -113,6 +116,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
+            save_screenshot_(driver=self, path='screenshots/')
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
         return ContestoWebElement(elements[0])
@@ -130,6 +134,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
+            save_screenshot_(driver=self, path='screenshots/')
             raise ElementNotFound(sizzle_selector, "sizzle selector")
 
         return [ContestoWebElement(element) for element in elements]
@@ -152,6 +157,7 @@ class ContestoDriver(Remote):
         try:
             wait.until(lambda dr: dr._is_sizzle_loaded())
         except TimeoutException:
+            save_screenshot_(driver=self, path='screenshots/')
             raise JavaScriptInjectionError("Sizzle")
 
     def _is_sizzle_loaded(self):
