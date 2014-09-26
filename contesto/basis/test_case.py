@@ -107,7 +107,7 @@ class ContestoTestCase(object):
         try:
             cls.driver.quit()
         except URLError:
-            raise ConnectionError(cls.driver_settings["host"], cls.driver_settings["port"])
+            raise ConnectionError('%s:%s' % (cls.driver_settings["host"], cls.driver_settings["port"]))
 
 
 class UnittestContestoTestCase(ContestoTestCase, TestCase):
