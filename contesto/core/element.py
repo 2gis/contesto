@@ -37,7 +37,7 @@ class ContestoWebElement(WebElement):
         try:
             element = wait.until(lambda el: el.find_element(*args, **kwargs))
         except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
+            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
 
         return ContestoWebElement(element)
 
@@ -52,7 +52,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
         except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
+            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
 
         return [ContestoWebElement(element) for element in elements]
 
@@ -69,7 +69,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
+            raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
 
         return ContestoWebElement(elements[0])
 
@@ -86,7 +86,7 @@ class ContestoWebElement(WebElement):
         try:
             elements = wait.until(lambda el: el.parent.execute_script(el._make_sizzle_string(sizzle_selector), el))
         except TimeoutException:
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
+            raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
 
         return [ContestoWebElement(element) for element in elements]
 

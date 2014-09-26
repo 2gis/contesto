@@ -81,7 +81,7 @@ class ContestoDriver(Remote):
         try:
             element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
         except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
+            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
 
         return ContestoWebElement(element)
 
@@ -96,7 +96,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.find_elements(*args, **kwargs))
         except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"])
+            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
 
         return [ContestoWebElement(element) for element in elements]
 
@@ -113,7 +113,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
+            raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
 
         return ContestoWebElement(elements[0])
 
@@ -130,7 +130,7 @@ class ContestoDriver(Remote):
         try:
             elements = wait.until(lambda dr: dr.execute_script(dr._make_sizzle_string(sizzle_selector)))
         except TimeoutException:
-            raise ElementNotFound(sizzle_selector, "sizzle selector")
+            raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
 
         return [ContestoWebElement(element) for element in elements]
 
