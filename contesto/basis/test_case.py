@@ -34,6 +34,7 @@ class ContestoTestCase(object):
         logger = logging.getLogger()
         logger.setLevel("DEBUG")
         logger.addHandler(log_handler)
+        self.driver._testMethodName = self._testMethodName
         if not config.session["shared"]:
             self.driver = self._create_session(self)
         log.env("sessionId: %s", self.driver.session_id)

@@ -17,6 +17,7 @@ class ContestoDriver(Remote):
         super(ContestoDriver, self).__init__(*args, **kwargs)
         self.element_map = dict()
         self._browser = None
+        self._testMethodName = None
 
     def __has_to_log_command(self, driver_command):
         command_info = self.command_executor._commands.get(driver_command)
@@ -59,6 +60,14 @@ class ContestoDriver(Remote):
                 if isinstance(element, WebElement):
                     self.element_map[element.id] = get_element_info(params)
         return result
+
+    @property
+    def testMethodName(self):
+        """
+        :rtype: str
+        """
+        if self._testMethodName is not None:
+            return self._testMethodName.split('(')[0]
 
     @property
     def browser(self):
