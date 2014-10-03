@@ -33,20 +33,23 @@ class ContestoWebElement(WebElement):
         except WebDriverException, e:
             raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
-    # def click(self):
-    #     """
-    #     :raise: ElementNotFound
-    #     """
-    #     try:
-    #         super(ContestoWebElement, self).click()
-    #     except WebDriverException, e:
-    #         raise ElementIsNotClickable(e.msg, e.screen, e.stacktrace, driver=self.parent)
+    def click(self):
+        """
+        :raise: ElementNotFound
+        """
+        try:
+            super(ContestoWebElement, self).click()
+        except WebDriverException, e:
+            raise ElementIsNotClickable(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
-    # def is_displayed(self):
-    #     try:
-    #         super(ContestoWebElement, self).is_displayed()
-    #     except WebDriverException, e:
-    #         raise ElementNotVisibleException(e.msg, e.screen, e.stacktrace, driver=self.parent)
+    def is_displayed(self):
+        """
+        :raise: ElementNotVisibleException
+        """
+        try:
+            super(ContestoWebElement, self).is_displayed()
+        except WebDriverException, e:
+            raise ElementNotVisibleException(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
     def find_element(self, *args, **kwargs):
         """
