@@ -5,7 +5,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto import config
-from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
+from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, ElementIsNotClickable, \
+    ContestoDriverException, ElementNotVisibleException
 
 
 class ContestoWebElement(WebElement):
@@ -19,12 +20,33 @@ class ContestoWebElement(WebElement):
     @property
     def text(self):
         wait = WebDriverWait(super(ContestoWebElement, self), float(config.timeout["normal"]))
-        text = wait.until(lambda el: el.text)
+        try:
+            text = wait.until(lambda el: el.text)
 
-        return text
+            return text
+        except WebDriverException, e:
+            raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
     def js_click(self):
-        self.parent.execute_script("arguments[0].click();", self)
+        try:
+            self.parent.execute_script("arguments[0].click();", self)
+        except WebDriverException, e:
+            raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
+
+    def click(self):
+        """
+        :raise: ElementNotFound
+        """
+        try:
+            super(ContestoWebElement, self).click()
+        except WebDriverException, e:
+            raise ElementIsNotClickable(e.msg, e.screen, e.stacktrace, driver=self.parent)
+
+    def is_displayed(self):
+        try:
+            super(ContestoWebElement, self).is_displayed()
+        except WebDriverException, e:
+            raise ElementNotVisibleException(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
     def find_element(self, *args, **kwargs):
         """
