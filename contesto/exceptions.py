@@ -12,6 +12,9 @@ class ElementNotFound(BaseError):
         self.value, self.by, self.driver = value, by, driver
 
     def __str__(self):
+        """
+        :rtype: str
+        """
         if config.utils['save_screenshots']:
             if self.driver is not None:
                 make_screenshot_(self.driver, path='screenshots/')
@@ -23,6 +26,9 @@ class ConnectionError(BaseError):
         self.command_executor = command_executor
 
     def __str__(self):
+        """
+        :rtype: str
+        """
         return "It seems, Selenium Server is not running on %s" % self.command_executor
 
 
@@ -31,6 +37,9 @@ class JavaScriptInjectionError(BaseError):
         self.script_name = script_name
 
     def __str__(self):
+        """
+        :rtype: str
+        """
         return "Couldn't inject %s" % self.script_name
 
 
@@ -39,6 +48,9 @@ class UnknownBrowserName(BaseError):
         self.browser_name, self.allowed_browsers = browser_name, allowed_browsers
 
     def __str__(self):
+        """
+        :rtype: str
+        """
         return "Browser name should be one of the following: " + str(self.allowed_browsers) + ", not a %s." % self.browser_name
 
 
@@ -48,6 +60,9 @@ class ContestoDriverException(WebDriverException):
         super(ContestoDriverException, self).__init__(msg, screen, stacktrace)
 
     def __str__(self):
+        """
+        :rtype: str
+        """
         if config.utils['save_screenshots']:
             if self.driver is not None:
                 make_screenshot_(self.driver, path='screenshots/')
@@ -64,6 +79,7 @@ class ElementIsNotClickable(ContestoDriverException):
 
         super(ElementIsNotClickable, self).__init__(make_readable_error(msg), screen, stacktrace, driver)
 
+
 class PageCantBeLoadedException(ContestoDriverException):
     pass
 
@@ -79,12 +95,10 @@ class InvalidSwitchToTargetException(ContestoDriverException):
 
 
 class NoSuchFrameException(InvalidSwitchToTargetException):
-
     pass
 
 
 class NoSuchWindowException(InvalidSwitchToTargetException):
-
     pass
 
 
@@ -138,7 +152,6 @@ class RemoteDriverServerException(ContestoDriverException):
 
 
 class TimeoutException(ContestoDriverException):
-
     pass
 
 
@@ -151,12 +164,10 @@ class UnexpectedTagNameException(ContestoDriverException):
 
 
 class InvalidSelectorException(NoSuchElementException):
-
     pass
 
 
 class ImeNotAvailableException(ContestoDriverException):
-
     pass
 
 
