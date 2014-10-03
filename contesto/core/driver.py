@@ -79,6 +79,22 @@ class ContestoDriver(Remote):
 
         return self._browser
 
+    def get(self, url):
+        wait = WebDriverWait(super(ContestoDriver, self),
+                             float(config.timeout["normal"]),
+                             ignored_exceptions=WebDriverException)
+        try:
+            super(ContestoDriver, self).get(url)
+            wait.until(lambda dr: self.page_loaded())
+        except TimeoutException:
+            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
+
+    def page_loaded(self):
+        if self.execute_script('return document.readyState;') == 'complete':
+            return True
+        else:
+            return False
+
     def find_element(self, *args, **kwargs):
         """
         :rtype: ContestoWebElement
