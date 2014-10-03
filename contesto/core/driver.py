@@ -7,7 +7,7 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto import config
 from contesto.core.element import ContestoWebElement
-from contesto.exceptions import ElementNotFound, JavaScriptInjectionError
+from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, PageCantBeLoadedException
 
 from ..utils.log import log
 
@@ -86,8 +86,8 @@ class ContestoDriver(Remote):
         try:
             super(ContestoDriver, self).get(url)
             wait.until(lambda dr: self.page_loaded())
-        except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
+        except TimeoutException, e:
+            raise PageCantBeLoadedException("Page can not be loaded with url: %s" % url, e.screen, e.stacktrace, driver=self)
 
     def page_loaded(self):
         if self.execute_script('return document.readyState;') == 'complete':

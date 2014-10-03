@@ -64,6 +64,9 @@ class ElementIsNotClickable(ContestoDriverException):
 
         super(ElementIsNotClickable, self).__init__(make_readable_error(msg), screen, stacktrace, driver)
 
+class PageCantBeLoadedException(ContestoDriverException):
+    pass
+
 
 class ErrorInResponseException(ContestoDriverException):
     def __init__(self, response, msg):
