@@ -10,6 +10,13 @@ class DesireCapabilitiesTestCase(unittest.TestCase):
     def setUp(self):
         config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/drivers.ini")
 
+    def test_dc_loading_any_additional_setting(self):
+        driver = HttpDriver()
+        driver_settings = getattr(config, driver._driver_type)
+        desired_capabilities = driver._form_desired_capabilities(driver_settings)
+        self.assertEqual(desired_capabilities.get('additional_setting'), 'some_value',
+                         'should load any setting to desired_capabilities')
+
     def test_ios_driver(self):
         driver = IosDriver()
         driver_settings = getattr(config, driver._driver_type)
@@ -38,7 +45,7 @@ class DictionaryDesireCapabilitiesTestCase(unittest.TestCase):
     def setUp(self):
         config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/desired_capabilities.ini")
 
-    def test_dictionary_desired_capabilities(self):
+    def test_dictionary_desired_capabilities_overwrite_all_other_capabilities(self):
         dc = {
             "browserName": "firefox",
             "platform": "LINUX"
