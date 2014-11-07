@@ -16,6 +16,20 @@ except ImportError:
 
 
 class ContestoTestCase(object):
+    def __new__(cls, *args, **kwargs):
+        try:
+            cls.driver_settings = getattr(config, cls._driver_type)
+        except AttributeError:
+            # for backward compatibility: HttpDriver mixin if no mixin provided
+            if isinstance(cls, type):
+                cls.__bases__ += (HttpDriver, )
+            else:
+                cls.__class__.__bases__ += (HttpDriver, )
+            cls.driver_settings = getattr(config, cls._driver_type)
+        cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
+        cls.command_executor = cls._form_command_executor(cls.driver_settings)
+        return super(ContestoTestCase, cls).__new__(cls, *args, **kwargs)
+
     @classmethod
     def _setup_class(cls):
         if config.session["shared"]:
@@ -60,23 +74,8 @@ class ContestoTestCase(object):
     def _create_session(cls):
         """
         :rtype: ContestoDriver
-        :raise: UnknownBrowserName
-        :raise: ConnectionError
         """
-        try:
-            cls.driver_settings = getattr(config, cls._driver_type)
-        except AttributeError:
-            # for backward compatibility: HttpDriver mixin if no mixin provided
-            if isinstance(cls, type):
-                cls.__bases__ += (HttpDriver, )
-            else:
-                cls.__class__.__bases__ += (HttpDriver, )
-            cls.driver_settings = getattr(config, cls._driver_type)
-
-        desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
-        command_executor = cls._form_command_executor(cls.driver_settings)
-
-        return cls._start_driver(desired_capabilities, command_executor)
+        return cls._start_driver(cls.desired_capabilities, cls.command_executor)
 
     @staticmethod
     def _form_command_executor(driver_settings):
@@ -93,6 +92,9 @@ class ContestoTestCase(object):
 
     @staticmethod
     def _start_driver(desired_capabilities, command_executor):
+        """
+        :raise: ConnectionError
+        """
         try:
             log.init("starting session...")
             driver = ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
