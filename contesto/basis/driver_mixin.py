@@ -44,6 +44,9 @@ class HttpDriver(AbstractDriver):
 
     @classmethod
     def _form_desired_capabilities(cls, driver_settings):
+        """
+        :raise: UnknownBrowserName
+        """
         super(HttpDriver, cls)._form_desired_capabilities(driver_settings)
 
         if cls.loaded_dc:
