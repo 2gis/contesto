@@ -84,10 +84,6 @@ class PageCantBeLoadedException(ContestoDriverException):
     pass
 
 
-class XHRActiveCountException(ContestoDriverException):
-    pass
-
-
 class ErrorInResponseException(ContestoDriverException):
     def __init__(self, response, msg):
         ContestoDriverException.__init__(self, msg)
