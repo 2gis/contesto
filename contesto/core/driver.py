@@ -90,7 +90,9 @@ class ContestoDriver(Remote):
             raise PageCantBeLoadedException("Page can not be loaded with url: %s" % url, e.screen, e.stacktrace, driver=self)
 
     def page_loaded(self):
-        if self.execute_script('return document.readyState;') == 'complete':
+        pl = self.execute_script('return document.readyState;')
+        log.info("Status Page Loaded: %s \n" % pl)
+        if pl == 'complete':
             return True
         else:
             return False
