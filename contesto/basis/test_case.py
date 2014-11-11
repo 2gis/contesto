@@ -33,15 +33,11 @@ class ContestoTestCase(object):
     @classmethod
     def _setup_class(cls):
         if config.session["shared"]:
-            if config.browsermobproxy['enabled']:
-                cls.bmproxy = cls._start_proxy()
             cls.driver = cls._create_session(cls)
 
     @classmethod
     def _teardown_class(cls):
         if config.session["shared"]:
-            if config.browsermobproxy['enabled']:
-                cls._stop_proxy(cls)
             cls._destroy_session(cls)
 
     def _setup_test(self):
@@ -59,22 +55,26 @@ class ContestoTestCase(object):
         if not config.session["shared"]:
             self._destroy_session(self)
 
-    @staticmethod
-    def _start_proxy():
-        if BMPClient is not None:
-            return BMPClient(config.browsermobproxy['url'])
-        else:
-            raise ImportError
+    @classmethod
+    def _connect_to_proxy(cls):
+        if config.browsermobproxy['enabled']:
+            if BMPClient is not None:
+                cls.bmproxy = BMPClient(config.browsermobproxy['url'])
+                cls.bmproxy.webdriver_proxy().add_to_capabilities(cls.desired_capabilities)
+            else:
+                raise ImportError('Cannot import name browsermobproxy.')
 
-    @staticmethod
-    def _stop_proxy(cls):
-        cls.bmproxy.close()
+    @classmethod
+    def _disconnect_from_proxy(cls):
+        if config.browsermobproxy['enabled']:
+            cls.bmproxy.close()
 
     @staticmethod
     def _create_session(cls):
         """
         :rtype: ContestoDriver
         """
+        cls._connect_to_proxy()
         return cls._start_driver(cls.desired_capabilities, cls.command_executor)
 
     @staticmethod
@@ -107,6 +107,7 @@ class ContestoTestCase(object):
         """
         :raise: ConnectionError
         """
+        cls._disconnect_from_proxy()
         try:
             cls.driver.quit()
         except URLError:
