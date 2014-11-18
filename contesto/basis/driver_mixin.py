@@ -58,9 +58,6 @@ class HttpDriver(AbstractDriver):
         except KeyError:
             raise UnknownBrowserName(driver_settings.selenium["browser"], cls.capabilities_map.keys())
 
-        if config.browsermobproxy['enabled']:
-            cls.bmproxy.webdriver_proxy().add_to_capabilities(desired_capabilities)
-
         return desired_capabilities
 
 
