@@ -31,7 +31,7 @@ class ContestoDriver(Remote):
     def __action_line(self, driver_command, params):
         command_info = self.command_executor._commands.get(driver_command)
         info = ""
-        if "element" in command_info[1].split('/'):
+        if ("element" and not 'active') in command_info[1].split('/'):
             info += "[%s][%s]" % (self.element_map[params["id"]][1], params["id"])
 
         if driver_command.startswith("sendKeys"):
@@ -48,7 +48,8 @@ class ContestoDriver(Remote):
 
     def execute(self, driver_command, params=None):
         def get_element_info(params):
-            return params.get('using', params), params.get('value', params)
+            if params is not None:
+                return params.get('using', params), params.get('value', params)
 
         if self.__has_to_log_command(driver_command):
             log.action(self.__action_line(driver_command, params))
