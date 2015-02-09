@@ -13,3 +13,5 @@ class BaseComponent(object):
         self.driver = driver
         self.element = element
         trace(self.__class__)
+
+Component = BaseComponent

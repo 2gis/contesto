@@ -1,13 +1,12 @@
 import logging
-import sys
 from urllib2 import URLError
 from unittest import TestCase
 
 from contesto import config
-from contesto.core.driver import ContestoDriver
+from contesto.core.driver import Driver
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler, log
-from .driver_mixin import HttpDriver
+from .driver_mixin import SeleniumDriverMixin
 
 try:
     from browsermobproxy import Client as BMPClient
@@ -20,11 +19,11 @@ class ContestoTestCase(object):
         try:
             cls.driver_settings = getattr(config, cls._driver_type)
         except AttributeError:
-            # for backward compatibility: HttpDriver mixin if no mixin provided
+            # for backward compatibility: SeleniumDriverMixin mixin if no mixin provided
             if isinstance(cls, type):
-                cls.__bases__ += (HttpDriver, )
+                cls.__bases__ += (SeleniumDriverMixin, )
             else:
-                cls.__class__.__bases__ += (HttpDriver, )
+                cls.__class__.__bases__ += (SeleniumDriverMixin, )
             cls.driver_settings = getattr(config, cls._driver_type)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
@@ -48,8 +47,7 @@ class ContestoTestCase(object):
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
         log.env("sessionId: %s", self.driver.session_id)
-        capabilities = "\n".join(["%-30s: %s" % c for c in self.driver.capabilities.items()])
-        log.env("capabilities: \n%s" % capabilities)
+        log.env("capabilities: \n%s\n" % self.driver.capabilities)
 
     def _teardown_test(self):
         if not config.session["shared"]:
@@ -72,7 +70,7 @@ class ContestoTestCase(object):
     @staticmethod
     def _create_session(cls):
         """
-        :rtype: ContestoDriver
+        :rtype: Driver
         """
         cls._connect_to_proxy()
         return cls._start_driver(cls.desired_capabilities, cls.command_executor)
@@ -90,14 +88,14 @@ class ContestoTestCase(object):
         command_executor = "http://%s:%d/%s" % (host, port, prefix.strip('/'))
         return command_executor.rstrip('/')
 
-    @staticmethod
-    def _start_driver(desired_capabilities, command_executor):
+    @classmethod
+    def _start_driver(cls, desired_capabilities, command_executor):
         """
         :raise: ConnectionError
         """
         try:
             log.init("starting session...")
-            driver = ContestoDriver(command_executor=command_executor, desired_capabilities=desired_capabilities)
+            driver = cls._driver(command_executor=command_executor, desired_capabilities=desired_capabilities)
             return driver
         except URLError:
             raise ConnectionError(command_executor)

@@ -1,10 +1,12 @@
 from contesto.exceptions import UnknownBrowserName
 from selenium.webdriver import DesiredCapabilities
-from contesto import config
+
+from contesto.core.driver import WebContestoDriver, MobileContestoDriver
 
 
 class AbstractDriver(object):
     _driver_type = None
+    _driver = None
     loaded_dc = None
     loaded_settings = None
 
@@ -19,8 +21,9 @@ class AbstractDriver(object):
         return cls.loaded_dc if cls.loaded_dc else cls.loaded_settings
 
 
-class HttpDriver(AbstractDriver):
+class SeleniumDriverMixin(AbstractDriver):
     _driver_type = 'selenium'
+    _driver = WebContestoDriver
 
     capabilities_map = {
         "firefox": DesiredCapabilities.FIREFOX,
@@ -47,7 +50,7 @@ class HttpDriver(AbstractDriver):
         """
         :raise: UnknownBrowserName
         """
-        super(HttpDriver, cls)._form_desired_capabilities(driver_settings)
+        super(SeleniumDriverMixin, cls)._form_desired_capabilities(driver_settings)
 
         if cls.loaded_dc:
             return cls.loaded_dc
@@ -61,9 +64,16 @@ class HttpDriver(AbstractDriver):
         return desired_capabilities
 
 
-class QtWebkitDriver(AbstractDriver):
+class QtWebkitDriverMixin(AbstractDriver):
     _driver_type = 'qtwebkitdriver'
+    _driver = WebContestoDriver
 
 
-class IosDriver(AbstractDriver):
+class IosDriverMixin(AbstractDriver):
     _driver_type = 'iosdriver'
+    _driver = MobileContestoDriver
+
+
+class AndroidDriverMixin(AbstractDriver):
+    _driver_type = 'androiddriver'
+    _driver = MobileContestoDriver

@@ -15,10 +15,11 @@ setup_args = {
             'config/*.ini'
         ],
     },
-    "version": "0.1.0-dev",
+    "version": "0.2.0",
     "install_requires": [
-        "selenium",
-        "browsermob-proxy",
+        "selenium==2.44.0",
+        "Appium-Python-Client==0.13",
+        "browsermob-proxy==0.6.0"
     ],
     "license": "MIT",
     "description": "",

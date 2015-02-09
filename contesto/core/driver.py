@@ -1,6 +1,7 @@
 import re
 
-from selenium.webdriver import Remote
+from selenium.webdriver import Remote as SeleniumDriver
+from appium.webdriver import Remote as AppiumDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
@@ -12,9 +13,9 @@ from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, PageC
 from ..utils.log import log
 
 
-class ContestoDriver(Remote):
+class Driver(object):
     def __init__(self, *args, **kwargs):
-        super(ContestoDriver, self).__init__(*args, **kwargs)
+        super(Driver, self).__init__(*args, **kwargs)
         self.element_map = dict()
         self._browser = None
         self._testMethodName = None
@@ -53,7 +54,7 @@ class ContestoDriver(Remote):
 
         if self.__has_to_log_command(driver_command):
             log.action(self.__action_line(driver_command, params))
-        result = super(ContestoDriver, self).execute(driver_command, params)
+        result = super(Driver, self).execute(driver_command, params)
         if isinstance(result.get("value", None), WebElement):
             self.element_map[result.get("value", None).id] = get_element_info(params)
         if isinstance(result.get("value", None), list):
@@ -70,6 +71,8 @@ class ContestoDriver(Remote):
         if self._testMethodName is not None:
             return self._testMethodName.split('(')[0]
 
+
+class WebContestoDriver(Driver, SeleniumDriver):
     @property
     def browser(self):
         """
@@ -94,36 +97,6 @@ class ContestoDriver(Remote):
         pl = self.execute_script('return document.readyState;')
         log.info("Status Page Loaded: %s \n" % pl)
         return pl == 'complete'
-
-    def find_element(self, *args, **kwargs):
-        """
-        :rtype: ContestoWebElement
-        :raise: ElementNotFound
-        """
-        wait = WebDriverWait(super(ContestoDriver, self),
-                             float(config.timeout["normal"]),
-                             ignored_exceptions=WebDriverException)
-        try:
-            element = wait.until(lambda dr: dr.find_element(*args, **kwargs))
-        except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
-
-        return ContestoWebElement(element)
-
-    def find_elements(self, *args, **kwargs):
-        """
-        :rtype: list of ContestoWebElement
-        :raise: ElementNotFound
-        """
-        wait = WebDriverWait(super(ContestoDriver, self),
-                             float(config.timeout["normal"]),
-                             ignored_exceptions=WebDriverException)
-        try:
-            elements = wait.until(lambda dr: dr.find_elements(*args, **kwargs))
-        except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self)
-
-        return [ContestoWebElement(element) for element in elements]
 
     def find_element_by_sizzle(self, sizzle_selector):
         """
@@ -196,3 +169,7 @@ class ContestoDriver(Remote):
             sizzle_selector = sizzle_selector.decode("utf-8")
 
         return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
+
+
+class MobileContestoDriver(Driver, AppiumDriver):
+    pass
