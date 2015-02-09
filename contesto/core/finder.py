@@ -23,7 +23,7 @@ def find_elements(obj, locator):
     wait = waiter(obj)
     log.internal(u"Trying to find elements: %s, timeout: %s" % (locator, wait._timeout))
     try:
-        elements = wait.until(lambda dr: dr.find_element(by=locator["by"], value=locator["value"]))
+        elements = wait.until(lambda dr: dr.find_elements(by=locator["by"], value=locator["value"]))
     except TimeoutException as e:
         log.exception(e)
         raise ElementNotFound(locator["value"], locator["by"])
