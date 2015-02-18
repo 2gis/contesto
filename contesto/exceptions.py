@@ -1,4 +1,4 @@
-from utils.utils import make_screenshot_
+from utils import make_screenshot
 from contesto import config
 from selenium.common.exceptions import WebDriverException
 
@@ -18,7 +18,7 @@ class ElementNotFound(BaseError):
         """
         if config.utils['save_screenshots']:
             if self.driver is not None:
-                make_screenshot_(self.driver, path='screenshots/')
+                make_screenshot(self.driver, path='screenshots/')
         return u"Element '%s' not found by '%s'" % (self.value, self.by)
 
 
@@ -66,7 +66,7 @@ class ContestoDriverException(WebDriverException):
         """
         if config.utils['save_screenshots']:
             if self.driver is not None:
-                make_screenshot_(self.driver, path='screenshots/')
+                make_screenshot(self.driver, path='screenshots/')
         exception_msg = "%s" % repr(self.msg)
         return exception_msg
 
@@ -173,4 +173,8 @@ class ImeNotAvailableException(ContestoDriverException):
 
 
 class ImeActivationFailedException(ContestoDriverException):
+    pass
+
+
+class SwipeError(ContestoDriverException):
     pass

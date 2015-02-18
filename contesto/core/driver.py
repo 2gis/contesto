@@ -24,7 +24,7 @@ class Driver(object):
         command_info = self.command_executor._commands.get(driver_command)
         if command_info[0] not in ["POST", "DELETE"]:
             return False
-        if command_info[1].split('/')[-1] in ["session", "element", "elements"]:
+        if command_info[1].split('/')[-1] in ["session", "element", "elements", "push_file"]:
             return False
 
         return True
@@ -84,17 +84,18 @@ class WebContestoDriver(Driver, SeleniumDriver):
         return self._browser
 
     def get(self, url):
-        wait = WebDriverWait(super(ContestoDriver, self),
+        wait = WebDriverWait(super(WebContestoDriver, self),
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            super(ContestoDriver, self).get(url)
+            super(WebContestoDriver, self).get(url)
             wait.until(lambda dr: self.page_loaded())
         except TimeoutException, e:
             raise PageCantBeLoadedException("Page can not be loaded with url: %s" % url, e.screen, e.stacktrace, driver=self)
 
     def page_loaded(self):
         pl = self.execute_script('return document.readyState;')
+
         log.info("Status Page Loaded: %s \n" % pl)
         return pl == 'complete'
 
