@@ -1,15 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup_args = {
     "name": "contesto",
     "maintainer": "2GIS",
     "maintainer_email": "autoqa@2gis.ru",
-    "packages": [
-        "contesto",
-        "contesto.basis",
-        "contesto.core",
-        "contesto.utils",
-    ],
+    "packages": find_packages(),
     "package_data": {
         'contesto': [
             'config/*.ini'
