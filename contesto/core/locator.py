@@ -17,17 +17,32 @@ class Locator(dict):
         self['value'] = value
 
 
-class JavaUiSelector(str):
+class JavaUiSelector(unicode):
     def __new__(cls, data=None):
         if data is None:
             data = unicode("new UiSelector()")
-        return str.__new__(cls, data)
+        return unicode.__new__(cls, data)
 
     def description(self, desc):
         return JavaUiSelector(self + '.description("%s")' % desc)
 
     def description_contains(self, desc):
         return JavaUiSelector(self + '.descriptionContains("%s")' % desc)
+
+    def description_matches(self, regex):
+        return JavaUiSelector(self + '.descriptionMatches("%s")' % regex)
+
+    def child_selector(self, selector):
+        return JavaUiSelector(self + '.childSelector(%s)' % selector)
+
+    def index(self, index):
+        return JavaUiSelector(self + '.index(%s)' % index)
+
+    def instance(self, instance):
+        return JavaUiSelector(self + '.instance(%s)' % instance)
+
+    def resource_id(self, id):
+        return JavaUiSelector(self + '.resourceId("%s")' % id)
 
 
 by_id = partial(Locator, By.ID)
