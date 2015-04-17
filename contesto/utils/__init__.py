@@ -40,20 +40,17 @@ class waiter(WebDriverWait):
         from contesto.exceptions import TimeoutException
 
         end_time = time.time() + self._timeout
-        error = None
         while True:
             try:
                 value = method(self._driver)
                 if value:
                     return value
-            except self._ignored_exceptions as e:
-                error = e
+            except self._ignored_exceptions:
+                pass
             time.sleep(self._poll)
             if time.time() > end_time:
                 break
 
-        # if error:
-        #     log.exception(error)
         raise TimeoutException(message)
 
 

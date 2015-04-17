@@ -17,16 +17,6 @@ class ContestoWebElement(WebElement):
         """
         self.__dict__.update(web_element.__dict__)
 
-    @property
-    def text(self):
-        wait = WebDriverWait(super(ContestoWebElement, self), float(config.timeout["normal"]))
-        try:
-            text = wait.until(lambda el: el.text)
-
-            return text
-        except WebDriverException, e:
-            raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
-
     def js_click(self):
         try:
             self.parent.execute_script("arguments[0].click();", self)
