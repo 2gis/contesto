@@ -41,6 +41,7 @@ class Config(object):
         :type path_to_file: str
         """
         parser = ConfigParser.SafeConfigParser()
+        parser.optionxform = str
         parser.read(path_to_file)
         sections = parser.sections()
         for section in sections:
