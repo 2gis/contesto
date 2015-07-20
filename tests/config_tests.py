@@ -14,7 +14,6 @@ def test_default_config():
     }
     default.timeout = {"normal": 5, }
     default.session = {"shared": False, }
-    default.sizzle = {"url": "http://cdnjs.cloudflare.com/ajax/libs/sizzle/1.10.14/sizzle.min.js", }
 
     for key, value in vars(default).iteritems():
         for k, v in value.iteritems():
