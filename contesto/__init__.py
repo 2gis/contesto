@@ -1,65 +1,9 @@
-import ConfigParser
-import os
-import ast
+from config import config
 
-
-class Config(object):
-    ### @todo add method for reinitializing config
-    selenium = {
-        "host": "",
-        "port": "",
-        "browser": "",
-        "platform": "",
-    }
-    browsermobproxy = {
-        'enabled': "",
-        'url': "",
-    }
-    timeout = {
-        "normal": "",
-    }
-    session = {
-        "shared": "",
-    }
-    sizzle = {
-        "url": "",
-    }
-    utils = {
-        "save_screenshots": "",
-    }
-
-    def __init__(self, *args):
-        """
-        :type args: tuple of str
-        """
-        for ini_path in args:
-            self.add_config_file(ini_path)
-
-    def add_config_file(self, path_to_file):
-        """
-        :type path_to_file: str
-        """
-        parser = ConfigParser.SafeConfigParser()
-        parser.read(path_to_file)
-        sections = parser.sections()
-        for section in sections:
-            params = parser.items(section)
-            section = section.lower()
-            d = {}
-            for param in params:
-                key, value = param
-                try:
-                    value = ast.literal_eval(value)
-                except (ValueError, SyntaxError):
-                    pass
-                d[key] = value
-            if hasattr(self, section):
-                getattr(self, section).update(d)
-            else:
-                setattr(self, section, d)
-
-
-config = Config(
-    os.path.abspath(os.path.dirname(__file__)) + "/config/config.core.ini",
-    os.path.abspath(os.path.dirname(__file__)) + "/config/config.default.ini",
-)
+from .basis.test_case import UnittestContestoTestCase, PyTestContestoTestCase
+from .core.locator import Locator
+from .core.finder import find_element, find_elements
+from .basis.page import Page
+from .basis.component import MobileComponent, BaseComponent
+from .basis.driver_mixin import SeleniumDriverMixin,\
+    QtWebkitDriverMixin, IosDriverMixin, AndroidDriverMixin

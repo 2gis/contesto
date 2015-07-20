@@ -17,16 +17,6 @@ class ContestoWebElement(WebElement):
         """
         self.__dict__.update(web_element.__dict__)
 
-    @property
-    def text(self):
-        wait = WebDriverWait(super(ContestoWebElement, self), float(config.timeout["normal"]))
-        try:
-            text = wait.until(lambda el: el.text)
-
-            return text
-        except WebDriverException, e:
-            raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
-
     def js_click(self):
         try:
             self.parent.execute_script("arguments[0].click();", self)
@@ -41,36 +31,6 @@ class ContestoWebElement(WebElement):
             super(ContestoWebElement, self).click()
         except WebDriverException, e:
             raise ElementIsNotClickable(e.msg, e.screen, e.stacktrace, driver=self.parent)
-
-    def find_element(self, *args, **kwargs):
-        """
-        :rtype: ContestoWebElement
-        :raise: ElementNotFound
-        """
-        wait = WebDriverWait(super(ContestoWebElement, self),
-                             float(config.timeout["normal"]),
-                             ignored_exceptions=WebDriverException)
-        try:
-            element = wait.until(lambda el: el.find_element(*args, **kwargs))
-        except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
-
-        return ContestoWebElement(element)
-
-    def find_elements(self, *args, **kwargs):
-        """
-        :rtype: list of ContestoWebElement
-        :raise: ElementNotFound
-        """
-        wait = WebDriverWait(super(ContestoWebElement, self),
-                             float(config.timeout["normal"]),
-                             ignored_exceptions=WebDriverException)
-        try:
-            elements = wait.until(lambda el: el.find_elements(*args, **kwargs))
-        except TimeoutException:
-            raise ElementNotFound(kwargs["value"], kwargs["by"], driver=self.parent)
-
-        return [ContestoWebElement(element) for element in elements]
 
     def find_element_by_sizzle(self, sizzle_selector):
         """

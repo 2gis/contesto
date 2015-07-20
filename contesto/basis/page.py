@@ -1,48 +1,42 @@
 from selenium.webdriver import TouchActions
+from contesto.basis import LoadableObject
 
 
-class Page(object):
+class Page(LoadableObject):
     """
     Base class for Page. The main of Page is encapsulate page elements
     for mobile, web or desktop application.
     """
 
-    def __init__(self, driver):
-        """
-        :type driver: ContestoDriver
-        """
-        self._driver = driver
-
     def get_source(self):
-        return self._driver.page_source
+        return self.driver.page_source
 
 
 class WebPage(Page):
-
     @property
     def url(self):
-        return self._driver.current_url
+        return self.driver.current_url
 
     def get(self, url):
         """
         :type url: str
         """
-        self._driver.get(url)
+        self.driver.get(url)
 
     def refresh(self):
-        self._driver.refresh()
+        self.driver.refresh()
 
     def forward(self):
-        self._driver.forward()
+        self.driver.forward()
 
     def back(self):
-        self._driver.back()
+        self.driver.back()
 
 
 class IosScreen(Page):
-
     def scroll_page(self, x, y):
-        TouchActions(self._driver).flick(x, y).perform()
+        TouchActions(self.driver).flick(x, y).perform()
+
 
 BasePage = WebPage
 

@@ -14,16 +14,23 @@ def trace(cls):
         def wrapped(*args, **kwargs):
             try:
                 log_handler.inc_depth()
-                logging.info("Entering: " + args[0].__class__.__name__ + "->" + func.__name__)
+                place = args[0].__class__.__name__ + u"->" + func.__name__
+                logging.info(u"Entering: %s" % place)
                 log_handler.inc_depth()
                 try:
                     return func(*args, **kwargs)
-                except Exception, e:
-                    logging.warning("Exception: " + str(e) + args[0].__class__.__name__ + "->" + func.__name__)
-                    raise
+                except Exception:
+                    error = sys.exc_info()
+                    try:
+                        exception = u"Exception: %s in %s" % (error[1], place)
+                    except UnicodeDecodeError:
+                        exception = u"Exception: %s in %s" % (str(error[1]).decode(sys.stdout.encoding), place)
+
+                    logging.error(exception)
+                    raise error[0], error[1], error[2]
             finally:
                 log_handler.dec_depth()
-                logging.info("Exiting: " + args[0].__class__.__name__ + "->" + func.__name__)
+                logging.info(u"Exiting: " + place)
                 log_handler.dec_depth()
 
         return wrapped
@@ -76,13 +83,6 @@ class ContestoLogHandler(logging.Handler):
 log_handler = ContestoLogHandler()
 
 
-INDENT = {
-    'INIT': 0,
-    'ENV': 1,
-    'ACTION': 2,
-}
-
-
 class StdoutHandler(logging.Handler):
     def emit(self, record):
         try:
@@ -113,6 +113,14 @@ class StdoutHandler(logging.Handler):
             self.handleError(record)
 
 
+INDENT = {
+    'INIT': 0,
+    'ENV': 1,
+    'ACTION': 2,
+    'INTERNAL': 3,
+}
+
+
 class IndentFormatter(logging.Formatter):
     indent = "  "
 
@@ -127,6 +135,18 @@ class IndentFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
+INIT_LEVEL = 19
+ENV_LEVEL = 18
+ACTION_LEVEL = 17
+INTERNAL_LEVEL = 16
+
+
+logging.addLevelName(INIT_LEVEL, "INIT")
+logging.addLevelName(ACTION_LEVEL, "ACTION")
+logging.addLevelName(ENV_LEVEL, "ENV")
+logging.addLevelName(INTERNAL_LEVEL, "INTERNAL")
+
+
 class IndentLogger(logging.Logger):
     FORMAT = "%(levelname)s :: %(message)s"
 
@@ -139,33 +159,19 @@ class IndentLogger(logging.Logger):
         console.setFormatter(indent_formatter)
 
         self.addHandler(console)
-        return
+
+    def init(self, message, *args, **kws):
+        self._log(INIT_LEVEL, message, args, **kws)
+
+    def action(self, message, *args, **kws):
+        self._log(ACTION_LEVEL, message, args, **kws)
+
+    def env(self, message, *args, **kws):
+        self._log(ENV_LEVEL, message, args, **kws)
+
+    def internal(self, message, *args, **kws):
+        self._log(INTERNAL_LEVEL, message, args, **kws)
 
 
 logging.setLoggerClass(IndentLogger)
-
-INIT_LEVEL = 17
-ENV_LEVEL = 18
-ACTION_LEVEL = 19
-logging.addLevelName(INIT_LEVEL, "INIT")
-logging.addLevelName(ACTION_LEVEL, "ACTION")
-logging.addLevelName(ENV_LEVEL, "ENV")
-
-
-def init(self, message, *args, **kws):
-    self._log(INIT_LEVEL, message, args, **kws)
-
-
-def action(self, message, *args, **kws):
-    self._log(ACTION_LEVEL, message, args, **kws)
-
-
-def env(self, message, *args, **kws):
-    self._log(ENV_LEVEL, message, args, **kws)
-
-
-logging.Logger.init = init
-logging.Logger.action = action
-logging.Logger.env = env
-
-log = logging.getLogger("TEST")
+log = IndentLogger("TEST")
