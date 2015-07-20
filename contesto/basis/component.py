@@ -4,11 +4,12 @@ from contesto.utils.extending import AutoExtendingSelectors
 from contesto.utils.log import trace
 from contesto.utils import Enum
 from contesto.exceptions import SwipeError
+from contesto.basis import LoadableObject
 
 from appium.webdriver.common.touch_action import TouchAction
 
 
-class BaseComponent(object):
+class BaseComponent(LoadableObject):
     __metaclass__ = AutoExtendingSelectors
 
     def __init__(self, driver, element=None):
@@ -19,10 +20,7 @@ class BaseComponent(object):
         self.driver = driver
         self.element = element
         trace(self.__class__)
-
-    # def __getattr__(self, item):
-    #     # if we've not defined method, let's lookup in element
-    #     return getattr(self.element, item)
+        super(BaseComponent, self).__init__(driver)
 
 
 Directions = Enum("down", "up", "left", "right")
@@ -110,4 +108,4 @@ class MobileComponent(BaseComponent):
         self.swipe(to_element=to_element)
 
     def swipe_discover_locator(self, locator, max_scroll_num):
-        raise NotImplemented()
+        raise NotImplementedError
