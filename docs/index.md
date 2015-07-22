@@ -22,6 +22,7 @@ class TestExample(ContestoTestCase):
 ## Simple configuration
 
 In case you need some customization, for example, you prefer to run selenium server on port `9000` and you need to run tests using `chrome`
+
 + create `config.ini`
 ```ini
 [Selenium]
@@ -29,6 +30,7 @@ host: localhost
 port: 9000
 browserName: chrome
 ```
+
 + add `config.ini` in test
 ```python
 from contesto import ContestoTestCase, config

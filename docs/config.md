@@ -22,7 +22,7 @@ You can import config
 >>> config.selenium['host']
 'localhost'
 ```
-WARNING! All sections are `lowercase`.
+WARNING! All sections are in `lowercase`.
 
 # Config management
 ## Adding a new config file
@@ -129,7 +129,7 @@ desired_capabilities: {
 
 ### use another driver section
 By default Contesto is using `selenium` driver with standard selenium bindings.
-To change this behaviour you should use [DriverMixin](docs/driver_mixin.md) when creating a test case.
+To change this behaviour you should use [DriverMixin](/driver_mixin) when creating a test case.
 
 ## Utils section
 TODO
