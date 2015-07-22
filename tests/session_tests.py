@@ -1,41 +1,53 @@
+import unittest
 from mock import Mock
-from contesto.basis.test_case import UnittestContestoTestCase
+from contesto import ContestoTestCase
 from contesto import config
 import os
 
 config.add_config_file(os.path.abspath(os.path.dirname(__file__)) + "/data/config/session.ini")
 
 
-class NoMixinSessionTest(UnittestContestoTestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls._start_driver = Mock(return_value=Mock(capabilities={}))
-        super(NoMixinSessionTest, cls).setUpClass()
+def mktest():
+    class TestCase(ContestoTestCase):
+        _start_driver = Mock(
+            side_effect=[
+                Mock(capabilities={}),
+                Mock(capabilities={})
+            ])
 
+        def runTest(self):
+            pass
+    test = TestCase()
+    return test
+
+
+class NoMixinSessionTest(unittest.TestCase):
     def test_true_shared_session(self):
-        driver1 = self.driver
-        self._start_driver = Mock()
-        self.setUp()
-        driver2 = self.driver
+        testcase = mktest()
+        testcase.setUpClass()
+        testcase.setUp()
+        driver1 = testcase.driver
+        testcase.setUp()
+        driver2 = testcase.driver
         self.assertEqual(driver1, driver2)
         self.assertTrue(config.session["shared"])
 
 
-class NoMixinNoSharedSessionTest(UnittestContestoTestCase):
+class NoMixinNoSharedSessionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         config.session["shared"] = False
-        cls._start_driver = Mock(return_value=Mock(capabilities={}))
-        super(NoMixinNoSharedSessionTest, cls).setUpClass()
 
     @classmethod
     def tearDownClass(cls):
         config.session["shared"] = True
 
     def test_false_shared_session(self):
-        driver1 = self.driver
-        self._start_driver = Mock(return_value=Mock(capabilities={}))
-        self.setUp()
-        driver2 = self.driver
+        testcase = mktest()
+        testcase.setUpClass()
+        testcase.setUp()
+        driver1 = testcase.driver
+        testcase.setUp()
+        driver2 = testcase.driver
         self.assertNotEqual(driver1, driver2)
         self.assertFalse(config.session["shared"])

@@ -1,6 +1,6 @@
 import logging
 from urllib2 import URLError
-from unittest import TestCase
+import unittest
 
 from contesto import config
 from contesto.core.driver import Driver
@@ -14,7 +14,7 @@ except ImportError:
     BMPClient = None
 
 
-class ContestoTestCase(object):
+class ContestoTestCase(unittest.TestCase):
     def __new__(cls, *args, **kwargs):
         try:
             cls.driver_settings = getattr(config, cls._driver_type)
@@ -111,38 +111,35 @@ class ContestoTestCase(object):
         except URLError:
             raise ConnectionError('%s:%s' % (cls.driver_settings["host"], cls.driver_settings["port"]))
 
-
-class UnittestContestoTestCase(ContestoTestCase, TestCase):
     @classmethod
     def setUpClass(cls):
-        super(UnittestContestoTestCase, cls)._setup_class()
+        cls._setup_class()
 
     @classmethod
     def tearDownClass(cls):
-        super(UnittestContestoTestCase, cls)._teardown_class()
+        cls._teardown_class()
 
     def setUp(self):
-        super(UnittestContestoTestCase, self)._setup_test()
+        self._setup_test()
 
     def tearDown(self):
-        super(UnittestContestoTestCase, self)._teardown_test()
+        self._teardown_test()
 
-
-class PyTestContestoTestCase(ContestoTestCase):
     @classmethod
     def setup_class(cls):
-        super(PyTestContestoTestCase, cls)._setup_class()
+        cls._setup_class()
 
     @classmethod
     def teardown_class(cls):
-        super(PyTestContestoTestCase, cls)._teardown_class()
+        cls._teardown_class()
 
     def setup_method(self, method):
-        super(PyTestContestoTestCase, self)._setup_test()
+        self._setup_test()
 
     def teardown_method(self, method):
-        super(PyTestContestoTestCase, self)._teardown_test()
-
+        self._teardown_test()
 
 # for backward compatibility
-BaseTestCase = PyTestContestoTestCase
+UnittestContestoTestCase = ContestoTestCase
+PyTestContestoTestCase = ContestoTestCase
+BaseTestCase = ContestoTestCase
