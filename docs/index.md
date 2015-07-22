@@ -1,11 +1,3 @@
-# Contesto
-
-[![Build Status](https://travis-ci.org/2gis/contesto.svg?branch=master)](https://travis-ci.org/2gis/contesto)
-
-## Features
-
-TODO
-
 ## Installation
 ```bash
 pip install -U git+https://github.com/2gis/contesto.git#egg=contesto
@@ -47,7 +39,3 @@ class TestExample(ContestoTestCase):
     def test_example(self):
         self.driver.get("http://google.com")
 ```
-
-## Documentation
-
-More [information](http://contesto.readthedocs.org/)
