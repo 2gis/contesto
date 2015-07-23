@@ -21,6 +21,3 @@ class PageTestCase(unittest.TestCase):
     def test_backward_compatibility_base_page(self):
         page = BasePage(self.driver)
         self.assertEqual(page.url, "http://current_url/")
-
-
-

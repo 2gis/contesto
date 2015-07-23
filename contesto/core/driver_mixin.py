@@ -15,7 +15,7 @@ class AbstractDriverMixin(object):
         cls._loaded_dc = driver_settings.get("desired_capabilities", None)
         if cls._loaded_dc is None:
             cls._loaded_settings = {
-                key: value for key, value in driver_settings.iteritems()
+                key: value for key, value in driver_settings.items()
                 if key not in ('host', 'port')}
 
         return cls._loaded_dc if cls._loaded_dc else cls._loaded_settings

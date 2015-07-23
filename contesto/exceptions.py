@@ -1,18 +1,18 @@
-from utils import make_screenshot
+from contesto.utils import make_screenshot
 from contesto import config
+
 from selenium.common.exceptions import WebDriverException
 
 
 class BaseError(Exception):
-    def __str__(self):
-        return unicode(self).encode('utf-8')
+    pass
 
 
 class ElementNotFound(BaseError):
     def __init__(self, value, by, driver=None):
         self.value, self.by, self.driver = value, by, driver
 
-    def __unicode__(self):
+    def __str__(self):
         """
         :rtype: unicode
         """
@@ -26,7 +26,7 @@ class ConnectionError(BaseError):
     def __init__(self, command_executor):
         self.command_executor = command_executor
 
-    def __unicode__(self):
+    def __str__(self):
         """
         :rtype: unicode
         """
@@ -37,7 +37,7 @@ class JavaScriptInjectionError(BaseError):
     def __init__(self, script_name):
         self.script_name = script_name
 
-    def __unicode__(self):
+    def __str__(self):
         """
         :rtype: unicode
         """
@@ -48,11 +48,11 @@ class UnknownBrowserName(BaseError):
     def __init__(self, browser_name, allowed_browsers):
         self.browser_name, self.allowed_browsers = browser_name, allowed_browsers
 
-    def __unicode__(self):
+    def __str__(self):
         """
         :rtype: unicode
         """
-        return u"Browser name should be one of the following: " + unicode(self.allowed_browsers) + ", not a %s." % self.browser_name
+        return u"Browser name should be one of the following: " + str(self.allowed_browsers) + ", not a %s." % self.browser_name
 
 
 class ContestoDriverException(WebDriverException):
@@ -60,7 +60,7 @@ class ContestoDriverException(WebDriverException):
         self.driver = driver
         super(ContestoDriverException, self).__init__(msg, screen, stacktrace)
 
-    def __unicode__(self):
+    def __str__(self):
         """
         :rtype: unicode
         """
@@ -124,7 +124,7 @@ class UnexpectedAlertPresentException(ContestoDriverException):
         super(ContestoDriverException, self).__init__(msg, screen, stacktrace)
         self.alert_text = alert_text
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Alert Text: %s\n%s" % (self.alert_text, str(super(ContestoDriverException, self)))
 
 

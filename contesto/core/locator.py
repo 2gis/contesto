@@ -17,11 +17,11 @@ class Locator(dict):
         self['value'] = value
 
 
-class JavaUiSelector(unicode):
+class JavaUiSelector(str):
     def __new__(cls, data=None):
         if data is None:
-            data = unicode("new UiSelector()")
-        return unicode.__new__(cls, data)
+            data = str("new UiSelector()")
+        return str.__new__(cls, data)
 
     def description(self, desc):
         return JavaUiSelector(self + '.description("%s")' % desc)

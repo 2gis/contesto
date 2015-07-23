@@ -1,9 +1,8 @@
-from config import config
+from contesto.config import config
 
-from .basis.test_case import ContestoTestCase, \
-    UnittestContestoTestCase, PyTestContestoTestCase  # deprecated
-from .core.locator import *
-from .core.finder import find_element, find_elements
-from .basis.page import Page, WebPage, MobilePage
-from .basis.component import Component, WebComponent, MobileComponent
-from .basis.driver_mixin import *
+from contesto.basis.test_case import ContestoTestCase
+from contesto.basis.page import Page, WebPage, MobilePage
+from contesto.basis.component import Component, WebComponent, MobileComponent
+from contesto.core.locator import *
+from contesto.core.finder import find_element, find_elements
+from contesto.core.driver_mixin import *

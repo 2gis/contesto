@@ -6,9 +6,11 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
-from contesto import config
-from contesto.core.element import ContestoWebElement
+from contesto.core.element import ContestoWebElement, ContestoMobileElement
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, PageCantBeLoadedException
+
+from contesto import config
+
 
 from ..utils.log import log
 
@@ -171,6 +173,10 @@ class ContestoWebDriver(Driver, SeleniumDriver):
 
         return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
 
+    def create_web_element(self, element_id):
+        return ContestoWebElement(self, element_id)
+
 
 class ContestoMobileDriver(Driver, AppiumDriver):
-    pass
+    def create_web_element(self, element_id):
+        return ContestoMobileElement(self, element_id)

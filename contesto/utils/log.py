@@ -19,15 +19,14 @@ def trace(cls):
                 log_handler.inc_depth()
                 try:
                     return func(*args, **kwargs)
-                except Exception:
-                    error = sys.exc_info()
+                except Exception as e:
                     try:
-                        exception = u"Exception: %s in %s" % (error[1], place)
+                        exception = u"Exception: %s in %s" % (e[1], place)
                     except UnicodeDecodeError:
-                        exception = u"Exception: %s in %s" % (str(error[1]).decode(sys.stdout.encoding), place)
+                        exception = u"Exception: %s in %s" % (str(e[1]).decode(sys.stdout.encoding), place)
 
                     logging.error(exception)
-                    raise error[0], error[1], error[2]
+                    raise e
             finally:
                 log_handler.dec_depth()
                 logging.info(u"Exiting: " + place)
@@ -87,25 +86,8 @@ class StdoutHandler(logging.Handler):
     def emit(self, record):
         try:
             msg = self.format(record)
-            fs = "%s\n"
-            try:
-                if (isinstance(msg, unicode) and
-                    getattr(sys.stdout, 'encoding', None)):
-                    ufs = u'%s\n'
-                    try:
-                        sys.stdout.write(ufs % msg)
-                    except UnicodeEncodeError:
-                        #Printing to terminals sometimes fails. For example,
-                        #with an encoding of 'cp1251', the above write will
-                        #work if written to a stream opened or wrapped by
-                        #the codecs module, but fail when writing to a
-                        #terminal even when the codepage is set to cp1251.
-                        #An extra encoding step seems to be needed.
-                        sys.stdout.write((ufs % msg).encode(sys.stdout.encoding))
-                else:
-                    sys.stdout.write(fs % msg)
-            except UnicodeError:
-                sys.stdout.write(fs % msg.encode("UTF-8"))
+            sys.stdout.write(msg)
+            sys.stdout.write("\n")
             sys.stdout.flush()
         except (KeyboardInterrupt, SystemExit):
             raise

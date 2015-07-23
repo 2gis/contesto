@@ -1,5 +1,8 @@
 # coding: utf-8
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import os
 import ast
 

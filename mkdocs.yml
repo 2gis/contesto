@@ -1,5 +1,6 @@
 site_name: Contesto
 pages:
 - Home: index.md
+- Page Object: page_object.md
 - Config: config.md
 theme: readthedocs
