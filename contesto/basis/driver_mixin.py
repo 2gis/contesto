@@ -1,29 +1,29 @@
 from contesto.exceptions import UnknownBrowserName
 from selenium.webdriver import DesiredCapabilities
 
-from contesto.core.driver import WebContestoDriver, MobileContestoDriver
+from contesto.core.driver import ContestoWebDriver, ContestoMobileDriver
 
 
-class AbstractDriver(object):
-    _driver_type = None
-    _driver = None
-    loaded_dc = None
-    loaded_settings = None
+class AbstractDriverMixin(object):
+    driver_section = None
+    driver_class = None
+    _loaded_dc = None
+    _loaded_settings = None
 
     @classmethod
     def _form_desired_capabilities(cls, driver_settings):
-        cls.loaded_dc = driver_settings.get("desired_capabilities", None)
-        if cls.loaded_dc is None:
-            cls.loaded_settings = {
+        cls._loaded_dc = driver_settings.get("desired_capabilities", None)
+        if cls._loaded_dc is None:
+            cls._loaded_settings = {
                 key: value for key, value in driver_settings.iteritems()
                 if key not in ('host', 'port')}
 
-        return cls.loaded_dc if cls.loaded_dc else cls.loaded_settings
+        return cls._loaded_dc if cls._loaded_dc else cls._loaded_settings
 
 
-class SeleniumDriverMixin(AbstractDriver):
-    _driver_type = 'selenium'
-    _driver = WebContestoDriver
+class SeleniumDriverMixin(AbstractDriverMixin):
+    driver_section = 'selenium'
+    driver_class = ContestoWebDriver
 
     capabilities_map = {
         "firefox": DesiredCapabilities.FIREFOX,
@@ -52,28 +52,28 @@ class SeleniumDriverMixin(AbstractDriver):
         """
         super(SeleniumDriverMixin, cls)._form_desired_capabilities(driver_settings)
 
-        if cls.loaded_dc:
-            return cls.loaded_dc
+        if cls._loaded_dc:
+            return cls._loaded_dc
 
         try:
             desired_capabilities = cls.capabilities_map[driver_settings["browser"].lower()]
-            desired_capabilities.update(cls.loaded_settings)
+            desired_capabilities.update(cls._loaded_settings)
         except KeyError:
             raise UnknownBrowserName(driver_settings.selenium["browser"], cls.capabilities_map.keys())
 
         return desired_capabilities
 
 
-class QtWebkitDriverMixin(AbstractDriver):
-    _driver_type = 'qtwebkitdriver'
-    _driver = WebContestoDriver
+class QtWebkitDriverMixin(AbstractDriverMixin):
+    driver_section = 'qtwebkitdriver'
+    driver_class = ContestoWebDriver
 
 
-class IosDriverMixin(AbstractDriver):
-    _driver_type = 'iosdriver'
-    _driver = MobileContestoDriver
+class IosDriverMixin(AbstractDriverMixin):
+    driver_section = 'iosdriver'
+    driver_class = ContestoMobileDriver
 
 
-class AndroidDriverMixin(AbstractDriver):
-    _driver_type = 'androiddriver'
-    _driver = MobileContestoDriver
+class AndroidDriverMixin(AbstractDriverMixin):
+    driver_section = 'androiddriver'
+    driver_class = ContestoMobileDriver

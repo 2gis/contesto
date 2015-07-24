@@ -1,5 +1,0 @@
-site_name: Contesto
-pages:
-- Home: index.md
-- Config: config.md
-theme: readthedocs

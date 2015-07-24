@@ -20,7 +20,7 @@ class ContestoWebElement(WebElement):
     def js_click(self):
         try:
             self.parent.execute_script("arguments[0].click();", self)
-        except WebDriverException, e:
+        except WebDriverException as e:
             raise ContestoDriverException(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
     def click(self):
@@ -29,7 +29,7 @@ class ContestoWebElement(WebElement):
         """
         try:
             super(ContestoWebElement, self).click()
-        except WebDriverException, e:
+        except WebDriverException as e:
             raise ElementIsNotClickable(e.msg, e.screen, e.stacktrace, driver=self.parent)
 
     def find_element_by_sizzle(self, sizzle_selector):

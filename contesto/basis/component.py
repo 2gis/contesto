@@ -9,7 +9,7 @@ from contesto.basis import LoadableObject
 from appium.webdriver.common.touch_action import TouchAction
 
 
-class BaseComponent(LoadableObject):
+class Component(LoadableObject):
     __metaclass__ = AutoExtendingSelectors
 
     def __init__(self, driver, element=None):
@@ -23,6 +23,10 @@ class BaseComponent(LoadableObject):
         super(BaseComponent, self).__init__(driver)
 
 
+BaseComponent = Component
+WebComponent = Component
+
+
 Directions = Enum("down", "up", "left", "right")
 
 
@@ -32,7 +36,7 @@ class MobileComponent(BaseComponent):
     _swipe_pause = 1
 
     @staticmethod
-    def _calculate_scrolls_nums(size, direction, to_element):
+    def _calculate_swipe_nums(size, direction, to_element):
         if to_element:
             width, height = size.get('width'), size.get('height')
             if direction == Directions.down or direction == Directions.up:
@@ -72,17 +76,17 @@ class MobileComponent(BaseComponent):
         end_y = left_corner_y + d_end_y
         return start_x, start_y, end_x, end_y
 
-    def swipe(self, direction=Directions.down, scroll_num=1, to_element=None):
+    def swipe(self, direction=Directions.down, swipe_num=1, to_element=None):
         if type(direction) is not Enum and direction not in Directions:
             raise SwipeError("Unknown direction to swipe to")
 
         location = self.element.location
         size = self.element.size
 
-        scroll_num = self._calculate_scrolls_nums(size, direction, to_element) or scroll_num
+        swipe_num = self._calculate_swipe_nums(size, direction, to_element) or swipe_num
         start_x, start_y, end_x, end_y = self._calculate_coordinates(location, size, direction)
 
-        for num in xrange(scroll_num):
+        for num in range(swipe_num):
             action = TouchAction(self.driver)
             action \
                 .press(x=start_x, y=start_y) \
@@ -92,20 +96,20 @@ class MobileComponent(BaseComponent):
             action.perform()
             sleep(self._swipe_pause)
 
-    def swipe_down(self, scroll_num=1):
-        self.swipe(direction=Directions.down, scroll_num=scroll_num)
+    def swipe_down(self, swipe_num=1):
+        self.swipe(direction=Directions.down, swipe_num=swipe_num)
 
-    def swipe_up(self, scroll_num=1):
-        self.swipe(direction=Directions.up, scroll_num=scroll_num)
+    def swipe_up(self, swipe_num=1):
+        self.swipe(direction=Directions.up, swipe_num=swipe_num)
 
-    def swipe_left(self, scroll_num=1):
-        self.swipe(direction=Directions.left, scroll_num=scroll_num)
+    def swipe_left(self, swipe_num=1):
+        self.swipe(direction=Directions.left, swipe_num=swipe_num)
 
-    def swipe_right(self, scroll_num=1):
-        self.swipe(direction=Directions.right, scroll_num=scroll_num)
+    def swipe_right(self, swipe_num=1):
+        self.swipe(direction=Directions.right, swipe_num=swipe_num)
 
     def swipe_to_element(self, to_element):
         self.swipe(to_element=to_element)
 
-    def swipe_discover_locator(self, locator, max_scroll_num):
+    def swipe_discover_locator(self, locator, max_swipe_nums):
         raise NotImplementedError

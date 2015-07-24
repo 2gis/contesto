@@ -50,4 +50,4 @@ class TestExample(ContestoTestCase):
 
 ## Documentation
 
-More [information](docs/index.md)
+More [information](http://contesto.readthedocs.org/)

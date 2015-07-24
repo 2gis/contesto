@@ -16,7 +16,7 @@ class ProxyInDesireCapabilitiesTestCase(unittest.TestCase):
 
     def test_proxy_adding_in_desired_capabilities_with_config(self):
         driver = SeleniumDriverMixin()
-        driver_settings = getattr(config, driver._driver_type)
+        driver_settings = getattr(config, driver.driver_section)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         ContestoTestCase.desired_capabilities = desired_capabilities
         with patch.object(test_case.BMPClient, '__init__', return_value=None):
@@ -41,7 +41,7 @@ class ProxyDisabledInDesireCapabilitiesTestCase(unittest.TestCase):
 
     def test_proxy_disabled_in_desired_capabilities_by_default(self):
         driver = SeleniumDriverMixin()
-        driver_settings = getattr(config, driver._driver_type)
+        driver_settings = getattr(config, driver.driver_section)
         desired_capabilities = driver._form_desired_capabilities(driver_settings)
         ContestoTestCase.desired_capabilities = desired_capabilities
         with patch.object(test_case.BMPClient, '__init__', return_value=None):

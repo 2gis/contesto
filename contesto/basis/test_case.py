@@ -17,14 +17,14 @@ except ImportError:
 class ContestoTestCase(unittest.TestCase):
     def __new__(cls, *args, **kwargs):
         try:
-            cls.driver_settings = getattr(config, cls._driver_type)
+            cls.driver_settings = getattr(config, cls.driver_section)
         except AttributeError:
             # for backward compatibility: SeleniumDriverMixin mixin if no mixin provided
             if isinstance(cls, type):
                 cls.__bases__ += (SeleniumDriverMixin, )
             else:
                 cls.__class__.__bases__ += (SeleniumDriverMixin, )
-            cls.driver_settings = getattr(config, cls._driver_type)
+            cls.driver_settings = getattr(config, cls.driver_section)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
         return super(ContestoTestCase, cls).__new__(cls, *args, **kwargs)
@@ -95,7 +95,9 @@ class ContestoTestCase(unittest.TestCase):
         """
         try:
             log.init("starting session...")
-            driver = cls._driver(command_executor=command_executor, desired_capabilities=desired_capabilities)
+            driver = cls.driver_class(
+                command_executor=command_executor,
+                desired_capabilities=desired_capabilities)
             return driver
         except URLError:
             raise ConnectionError(command_executor)
