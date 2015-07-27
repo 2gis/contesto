@@ -72,7 +72,7 @@ class Driver(object):
             return self._testMethodName.split('(')[0]
 
 
-class WebContestoDriver(Driver, SeleniumDriver):
+class ContestoWebDriver(Driver, SeleniumDriver):
     @property
     def browser(self):
         """
@@ -84,13 +84,13 @@ class WebContestoDriver(Driver, SeleniumDriver):
         return self._browser
 
     def get(self, url):
-        wait = WebDriverWait(super(WebContestoDriver, self),
+        wait = WebDriverWait(super(ContestoWebDriver, self),
                              float(config.timeout["normal"]),
                              ignored_exceptions=WebDriverException)
         try:
-            super(WebContestoDriver, self).get(url)
+            super(ContestoWebDriver, self).get(url)
             wait.until(lambda dr: self.page_loaded())
-        except TimeoutException, e:
+        except TimeoutException as e:
             raise PageCantBeLoadedException("Page can not be loaded with url: %s" % url, e.screen, e.stacktrace, driver=self)
 
     def page_loaded(self):
@@ -172,5 +172,5 @@ class WebContestoDriver(Driver, SeleniumDriver):
         return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
 
 
-class MobileContestoDriver(Driver, AppiumDriver):
+class ContestoMobileDriver(Driver, AppiumDriver):
     pass

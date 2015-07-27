@@ -4,7 +4,7 @@ from contesto.basis import LoadableObject
 
 class Page(LoadableObject):
     """
-    Base class for Page. The main of Page is encapsulate page elements
+    The main point of Page is encapsulate page elements
     for mobile, web or desktop application.
     """
 
@@ -13,15 +13,14 @@ class Page(LoadableObject):
 
 
 class WebPage(Page):
+    """
+    The main point of Page is encapsulate page elements
+    for mobile, web or desktop application.
+    """
+
     @property
     def url(self):
         return self.driver.current_url
-
-    def get(self, url):
-        """
-        :type url: str
-        """
-        self.driver.get(url)
 
     def refresh(self):
         self.driver.refresh()
@@ -33,10 +32,12 @@ class WebPage(Page):
         self.driver.back()
 
 
-class IosScreen(Page):
+class MobilePage(Page):
     def scroll_page(self, x, y):
         TouchActions(self.driver).flick(x, y).perform()
 
 
-BasePage = WebPage
 
+# backward compatibility
+IosScreen = MobilePage
+BasePage = WebPage
