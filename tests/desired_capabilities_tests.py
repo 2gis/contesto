@@ -1,10 +1,10 @@
-from contesto.basis.driver_mixin import SeleniumDriverMixin,\
+import unittest
+
+from contesto.core.driver_mixin import SeleniumDriverMixin,\
     IosDriverMixin, QtWebkitDriverMixin
 from contesto import config
 from contesto.basis.test_case import ContestoTestCase
-
 import os
-import unittest
 
 
 class DesireCapabilitiesTestCase(unittest.TestCase):

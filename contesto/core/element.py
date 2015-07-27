@@ -1,22 +1,17 @@
 import re
 
-from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.remote.webelement import WebElement as SeleniumWebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
+
+from appium.webdriver.webelement import WebElement as AppiumWebElement
 
 from contesto import config
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, ElementIsNotClickable, \
     ContestoDriverException, ElementNotVisibleException
 
 
-class ContestoWebElement(WebElement):
-    ### @todo class very similar to ContestoWebDriver (especially sizzle-part). Common parts in separate class
-    def __init__(self, web_element):
-        """
-        :type web_element: WebElement
-        """
-        self.__dict__.update(web_element.__dict__)
-
+class ContestoWebElement(SeleniumWebElement):
     def js_click(self):
         try:
             self.parent.execute_script("arguments[0].click();", self)
@@ -103,3 +98,7 @@ class ContestoWebElement(WebElement):
             sizzle_selector = sizzle_selector.decode("utf-8")
 
         return "return Sizzle(\"%s\", arguments[0]);" % re.escape(sizzle_selector)
+
+
+class ContestoMobileElement(AppiumWebElement):
+    pass

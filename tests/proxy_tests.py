@@ -1,11 +1,11 @@
+import unittest
+
 from contesto import config
 from mock import patch
 import os
-import unittest
-
 from contesto.basis import test_case
 from contesto.basis.test_case import ContestoTestCase
-from contesto.basis.driver_mixin import SeleniumDriverMixin
+from contesto.core.driver_mixin import SeleniumDriverMixin
 
 
 class ProxyInDesireCapabilitiesTestCase(unittest.TestCase):

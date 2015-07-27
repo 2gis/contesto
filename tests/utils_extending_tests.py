@@ -1,11 +1,29 @@
+import unittest
+
 from contesto.utils.extending import AutoExtendingSelectors
 
+"""
+Trick to create class with metaclass
+for both python 2 and 3. It's like
 
+2:
 class Foo(object):
-    __metaclass__ = AutoExtendingSelectors
-    selectors = {
-        'a': 1,
+    __metaclass__=AutoExtendingSelectors
+    selectors: {
+        'a': 1
     }
+
+3:
+class Foo(metaclass=AutoExtendingSelectors):
+    selectors: {
+        'a': 1
+    }
+"""
+Foo = AutoExtendingSelectors("Foo", (), {
+    'selectors': {
+        'a': 1
+    }
+})
 
 
 class Bar(Foo):
@@ -35,12 +53,13 @@ def dict_equals(dict1, dict2):
         return True
 
 
-def test_autoextending_selectors():
-    foo = Foo()
-    bar = Bar()
-    baz = Baz()
-    qux = Qux()
-    assert dict_equals(foo.selectors, {'a': 1})
-    assert dict_equals(bar.selectors, {'a': 1, 'b': 2})
-    assert dict_equals(baz.selectors, {'a': 3, 'b': 2, 'c': 4})
-    assert dict_equals(qux.selectors, {'a': 3, 'b': 2, 'c': 4})
+class AutoextendingSelectorsTest(unittest.TestCase):
+    def test_autoextending_selectors(self):
+        foo = Foo()
+        bar = Bar()
+        baz = Baz()
+        qux = Qux()
+        self.assertEqual({'a': 1}, foo.selectors)
+        self.assertEqual({'a': 1, 'b': 2}, bar.selectors)
+        self.assertEqual({'a': 3, 'b': 2, 'c': 4}, baz.selectors)
+        self.assertEqual({'a': 3, 'b': 2, 'c': 4}, qux.selectors)

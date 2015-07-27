@@ -1,12 +1,17 @@
 import logging
-from urllib2 import URLError
+try:
+    from urllib2 import URLError
+except ImportError:
+    from urllib.error import URLError
 import unittest
 
-from contesto import config
 from contesto.core.driver import Driver
+from contesto.core.driver_mixin import SeleniumDriverMixin
+
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler, log
-from .driver_mixin import SeleniumDriverMixin
+
+from contesto import config
 
 try:
     from browsermobproxy import Client as BMPClient
@@ -27,7 +32,7 @@ class ContestoTestCase(unittest.TestCase):
             cls.driver_settings = getattr(config, cls.driver_section)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
-        return super(ContestoTestCase, cls).__new__(cls, *args, **kwargs)
+        return super(ContestoTestCase, cls).__new__(cls)
 
     @classmethod
     def _setup_class(cls):
