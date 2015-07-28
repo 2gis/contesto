@@ -1,7 +1,6 @@
 from time import sleep
 
 from contesto.utils.extending import AutoExtendingSelectors
-from contesto.utils.log import trace
 from contesto.utils import Enum
 from contesto.exceptions import SwipeError
 from contesto.basis import LoadableObject
@@ -13,14 +12,9 @@ class Component(LoadableObject):
     __metaclass__ = AutoExtendingSelectors
 
     def __init__(self, driver, element=None):
-        """
-        :type driver: ContestoDriver
-        :type element: ContestoWebElement
-        """
         self.driver = driver
         self.element = element
-        trace(self.__class__)
-        super(BaseComponent, self).__init__(driver)
+        super(Component, self).__init__(driver)
 
 
 BaseComponent = Component

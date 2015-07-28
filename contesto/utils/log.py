@@ -21,9 +21,9 @@ def trace(cls):
                     return func(*args, **kwargs)
                 except Exception as e:
                     try:
-                        exception = u"Exception: %s in %s" % (e[1], place)
+                        exception = u"Exception: %s in %s" % (str(e), place)
                     except UnicodeDecodeError:
-                        exception = u"Exception: %s in %s" % (str(e[1]).decode(sys.stdout.encoding), place)
+                        exception = u"Exception: %s in %s" % (str(e).encode(sys.stdout.encoding), place)
 
                     logging.error(exception)
                     raise e
@@ -34,7 +34,8 @@ def trace(cls):
 
         return wrapped
 
-    for name, m in inspect.getmembers(cls, inspect.ismethod):
+    for name, m in inspect.getmembers(
+            cls, lambda x: inspect.isfunction(x) or inspect.ismethod(x)):
         setattr(cls, name, log(m))
     return cls
 
