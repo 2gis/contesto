@@ -13,7 +13,7 @@ setup_args = {
     "version": "0.2.0",
     "install_requires": [
         "selenium==2.44.0",
-        "Appium-Python-Client==0.13",
+        "Appium-Python-Client==0.17",
         "browsermob-proxy==0.7.1"
     ],
     "license": "MIT",
