@@ -1,11 +1,10 @@
-from datetime import datetime
 import time
 
 from selenium.webdriver.support.wait import WebDriverWait
 
 from .log import log
-
 from contesto import config
+from contesto.utils.screenshot import make_screenshot
 
 
 class Enum(object):
@@ -54,23 +53,3 @@ class waiter(WebDriverWait):
         raise TimeoutException(message)
 
 
-def make_screenshot(driver, path=None, clean=False):
-    """
-    :type driver: WebDriver or WebElement or ContestoDriver
-    """
-    if clean:
-        # todo clean screenshots directory
-        pass
-    if driver.capabilities['takesScreenshot']:
-        date_time = datetime.now().strftime('%Y_%m_%d_%H_%M')
-        if driver.testMethodName is not None:
-            scr_file = '%s_%s_screenshot.png' % (date_time, driver.testMethodName)
-        else:
-            scr_file = '%s_screenshot.png' % date_time
-
-        if path is not None:
-            scr_file = '%s%s' % (path, scr_file)
-        driver.save_screenshot(scr_file)
-    else:
-        raise EnvironmentError('Option "takesScreenshot" in Capabilities is disabled.\n'
-                               'Please enable option to save screenshot.')
