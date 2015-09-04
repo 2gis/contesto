@@ -16,9 +16,6 @@ class ElementNotFound(BaseError):
         """
         :rtype: unicode
         """
-        if config.utils['save_screenshots']:
-            if self.driver is not None:
-                make_screenshot(self.driver, path='screenshots/')
         return u"Element '%s' not found by '%s'" % (self.value, self.by)
 
 
@@ -59,16 +56,6 @@ class ContestoDriverException(WebDriverException):
     def __init__(self, msg=None, screen=None, stacktrace=None, driver=None):
         self.driver = driver
         super(ContestoDriverException, self).__init__(msg, screen, stacktrace)
-
-    def __str__(self):
-        """
-        :rtype: unicode
-        """
-        if config.utils['save_screenshots']:
-            if self.driver is not None:
-                make_screenshot(self.driver, path='screenshots/')
-        exception_msg = "%s" % repr(self.msg)
-        return exception_msg
 
 
 class ElementIsNotClickable(ContestoDriverException):
