@@ -59,3 +59,4 @@ Contents:
    driver_mixin
    element
    finder
+   utils

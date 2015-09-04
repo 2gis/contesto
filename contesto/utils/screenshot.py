@@ -9,6 +9,8 @@ from contesto.utils import log
 
 def make_screenshot(driver, path=None, clean=False):
     """
+    Saves screenshot of the current window in ``path`` folder with file name combined of current test name and date.
+
     :type driver: WebDriver or WebElement or ContestoDriver
     """
     if clean:
@@ -44,8 +46,11 @@ def _try_make_screenshot(obj):
 
 def save_screenshot_on_error(func):
     """
-    Saves screenshot if method raised exception and `save_screenshots` option in `utils` section is set.
-    Screenshot is saved to `screenshots_path` defined in `utils` section of config.
+    Saves screenshot if method raised exception and ``contesto.config.utils["save_screenshots"]`` is set.
+
+    Screenshot can be saved only if ``driver`` is accessible as ``self.driver`` in decorated method.
+    Screenshot is saved to folder defined in ``contesto.config.utils["screenshots_path"]``
+    or ``"screenshots/"`` if undefined.
     """
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -60,7 +65,10 @@ def save_screenshot_on_error(func):
 
 class SaveScreenshotOnError(type):
     """
-    A metaclass that decorates all methods matching `__save_screenshot_pattern__` with :func:`save_screenshot_on_error`
+    A metaclass that decorates class methods with :func:`save_screenshot_on_error`.
+
+    Only methods matching ``__save_screenshot_pattern__`` pattern are decorated.
+    ``__save_screenshot_pattern__`` defaults to :attr:`SaveScreenshotOnError.DEFAULT_PATTERN` if not set.
     """
     DEFAULT_PATTERN = '(?:^|[\\b_\\.-])[Tt]est'
 
