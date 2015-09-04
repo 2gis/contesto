@@ -132,7 +132,13 @@ By default Contesto is using ``selenium`` driver with standard selenium bindings
 
 Utils section
 -------------
-TODO
+- ``save_screenshots`` - if set and test method is decorated with :func:`contesto.utils.screenshot.save_screenshot_on_error` then screenshots will be saved on any uncaught exception raised in test method.
+- ``screenshots_path`` - path for existing folder where screenshots will be saved (absolute or relative to current working directory).
+::
+
+    [utils]
+    save_screenshots: True
+    screenshot_path: /some/existing/path/screenshots/
 
 Timeout section
 ---------------
