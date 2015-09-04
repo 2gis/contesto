@@ -1,5 +1,5 @@
 Utils
-************
+*****
 
 Screenshot
 ==========
@@ -10,7 +10,7 @@ Screenshot
 .. autofunction:: make_screenshot
 
 Save screenshot on error
-+++++++++++++
+++++++++++++++++++++++++
 
 .. autofunction:: save_screenshot_on_error
 
