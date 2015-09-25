@@ -132,21 +132,5 @@ class ContestoTestCase(unittest.TestCase):
     def tearDown(self):
         self._teardown_test()
 
-    @classmethod
-    def setup_class(cls):
-        cls._setup_class()
-
-    @classmethod
-    def teardown_class(cls):
-        cls._teardown_class()
-
-    def setup_method(self, method):
-        self._setup_test()
-
-    def teardown_method(self, method):
-        self._teardown_test()
-
-# for backward compatibility
 UnittestContestoTestCase = ContestoTestCase
-PyTestContestoTestCase = ContestoTestCase
 BaseTestCase = ContestoTestCase
