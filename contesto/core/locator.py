@@ -6,6 +6,13 @@ from selenium.webdriver.common.by import By
 from appium.webdriver.common.mobileby import MobileBy
 
 
+__all__ = ["by",
+           "by_accessibility_id", "by_class_name", "by_css_selector", "by_id",
+           "by_link_text", "by_name", "by_partial_link_text", "by_sizzle",
+           "by_tag_name", "by_uiautomation", "by_uiautomator", "by_xpath",
+           "JavaUiSelector", "Locator"]
+
+
 class ContestoBy(By):
     SIZZLE = "sizzle"
 
@@ -59,3 +66,20 @@ by_uiautomation = partial(Locator, MobileBy.IOS_UIAUTOMATION)
 by_accessibility_id = partial(Locator, MobileBy.ACCESSIBILITY_ID)
 
 by_sizzle = partial(Locator, ContestoBy.SIZZLE)
+
+
+class by:
+    id = partial(Locator, By.ID)
+    xpath = partial(Locator, By.XPATH)
+    link_text = partial(Locator, By.LINK_TEXT)
+    partial_link_text = partial(Locator, By.PARTIAL_LINK_TEXT)
+    name = partial(Locator, By.NAME)
+    tag_name = partial(Locator, By.TAG_NAME)
+    class_name = partial(Locator, By.CLASS_NAME)
+    css_selector = partial(Locator, By.CSS_SELECTOR)
+
+    uiautomator = partial(Locator, MobileBy.ANDROID_UIAUTOMATOR)
+    uiautomation = partial(Locator, MobileBy.IOS_UIAUTOMATION)
+    accessibility_id = partial(Locator, MobileBy.ACCESSIBILITY_ID)
+
+    sizzle = partial(Locator, ContestoBy.SIZZLE)
