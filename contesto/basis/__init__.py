@@ -6,7 +6,7 @@ from contesto.utils import waiter
 
 
 class LoadableObject(object):
-    title = None
+    __title__ = None
     _on_load_elements = None
     _on_load_hooks = None
 
@@ -29,7 +29,7 @@ class LoadableObject(object):
         self._on_load_elements += elements
 
     def _load(self):
-        log.info("Loading %s" % self.title)
+        log.info("Loading %s" % self.__title__)
 
         if self._on_load_hooks:
             log.info("Running onload hooks")
@@ -45,9 +45,9 @@ class LoadableObject(object):
                 wait.until(lambda el: el.is_displayed())
             except:
                 raise Exception("Failed to load page: %s\n"
-                                "%s\n" % (self.title, format_exc()))
+                                "%s\n" % (self.__title__, format_exc()))
 
-        log.info("%s loaded" % self.title)
+        log.info("%s loaded" % self.__title__)
 
     def __init__(self, driver):
         """
@@ -60,7 +60,7 @@ class LoadableObject(object):
         self.register_onload_elements([])
         self.register_onload_hooks([])
 
-        if self.title is None:
-            self.title = self.__class__.__name__
+        if self.__title__ is None:
+            self.__title__ = self.__class__.__name__
 
         self._load()
