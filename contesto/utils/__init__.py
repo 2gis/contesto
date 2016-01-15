@@ -4,7 +4,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from .log import log
 from contesto import config
-from contesto.utils.screenshot import make_screenshot
 
 
 class Enum(object):
