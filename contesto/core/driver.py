@@ -116,7 +116,7 @@ class ContestoWebDriver(Driver, SeleniumDriver):
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
 
-        return ContestoWebElement(elements[0])
+        return elements[0]
 
     def find_elements_by_sizzle(self, sizzle_selector):
         """
@@ -133,7 +133,7 @@ class ContestoWebDriver(Driver, SeleniumDriver):
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self)
 
-        return [ContestoWebElement(element) for element in elements]
+        return elements
 
     def _inject_sizzle(self):
         """

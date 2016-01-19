@@ -42,7 +42,7 @@ class ContestoWebElement(SeleniumWebElement):
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
 
-        return ContestoWebElement(elements[0])
+        return elements[0]
 
     def find_elements_by_sizzle(self, sizzle_selector):
         """
@@ -59,7 +59,7 @@ class ContestoWebElement(SeleniumWebElement):
         except TimeoutException:
             raise ElementNotFound(sizzle_selector, "sizzle selector", driver=self.parent)
 
-        return [ContestoWebElement(element) for element in elements]
+        return elements
 
     def _inject_sizzle(self):
         """
