@@ -1,5 +1,8 @@
 import unittest
-from mock import Mock
+try:
+    from mock import Mock
+except ImportError:
+    from unittest.mock import Mock
 from contesto import ContestoTestCase
 from contesto import config
 import os

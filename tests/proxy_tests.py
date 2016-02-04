@@ -1,7 +1,10 @@
 import unittest
 
 from contesto import config
-from mock import patch
+try:
+    from mock import Mock, patch
+except ImportError:
+    from unittest.mock import Mock, patch
 import os
 from contesto.basis import test_case
 from contesto.basis.test_case import ContestoTestCase

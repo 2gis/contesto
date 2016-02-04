@@ -6,13 +6,6 @@ from selenium.webdriver.common.by import By
 from appium.webdriver.common.mobileby import MobileBy
 
 
-__all__ = ["by",
-           "by_accessibility_id", "by_class_name", "by_css_selector", "by_id",
-           "by_link_text", "by_name", "by_partial_link_text", "by_sizzle",
-           "by_tag_name", "by_uiautomation", "by_uiautomator", "by_xpath",
-           "JavaUiSelector", "Locator"]
-
-
 class ContestoBy(By):
     SIZZLE = "sizzle"
 

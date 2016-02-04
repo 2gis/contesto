@@ -1,7 +1,6 @@
 from contesto import config
 
 from selenium.common.exceptions import WebDriverException
-from contesto.utils.screenshot import make_screenshot
 
 
 class BaseError(Exception):

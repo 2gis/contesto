@@ -1,4 +1,5 @@
 import logging
+from types import MethodType
 try:
     from urllib2 import URLError
 except ImportError:
@@ -10,6 +11,7 @@ from contesto.core.driver_mixin import SeleniumDriverMixin
 
 from contesto.exceptions import ConnectionError
 from contesto.utils.log import log_handler, log
+from contesto.utils.screenshot import save_screenshot_on_error
 
 from contesto import config
 
@@ -20,7 +22,7 @@ except ImportError:
 
 
 class ContestoTestCase(unittest.TestCase):
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, test_name='runTest'):
         try:
             cls.driver_settings = getattr(config, cls.driver_section)
         except AttributeError:
@@ -32,6 +34,11 @@ class ContestoTestCase(unittest.TestCase):
             cls.driver_settings = getattr(config, cls.driver_section)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
+        test = getattr(cls, test_name)
+        if isinstance(test, MethodType):
+            test = test.__func__
+        if config.utils.get('save_screenshots'):
+            setattr(cls, test_name, save_screenshot_on_error(test))
         return super(ContestoTestCase, cls).__new__(cls)
 
     @classmethod
