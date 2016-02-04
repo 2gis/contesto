@@ -1,4 +1,5 @@
 import re
+import logging
 
 from selenium.webdriver import Remote as SeleniumDriver
 from appium.webdriver import Remote as AppiumDriver
@@ -8,11 +9,10 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto.core.element import ContestoWebElement, ContestoMobileElement
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, PageCantBeLoadedException
-
 from contesto import config
 
 
-from ..utils.log import log
+log = logging.getLogger(__name__)
 
 
 class Driver(object):
@@ -55,7 +55,7 @@ class Driver(object):
                 return params.get('using', params), params.get('value', params)
 
         if self.__has_to_log_command(driver_command):
-            log.action(self.__action_line(driver_command, params))
+            log.debug(self.__action_line(driver_command, params))
         result = super(Driver, self).execute(driver_command, params)
         if isinstance(result.get("value", None), WebElement):
             self.element_map[result.get("value", None).id] = get_element_info(params)
@@ -98,7 +98,7 @@ class ContestoWebDriver(Driver, SeleniumDriver):
     def page_loaded(self):
         pl = self.execute_script('return document.readyState;')
 
-        log.info("Status Page Loaded: %s \n" % pl)
+        log.info("Status Page Loaded: %s" % pl)
         return pl == 'complete'
 
     def find_element_by_sizzle(self, sizzle_selector):
