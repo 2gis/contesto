@@ -10,7 +10,6 @@ from contesto.core.driver import Driver
 from contesto.core.driver_mixin import SeleniumDriverMixin
 
 from contesto.exceptions import ConnectionError
-from contesto.utils.log import log_handler, log
 from contesto.utils.screenshot import save_screenshot_on_error
 
 from contesto import config
@@ -19,6 +18,9 @@ try:
     from browsermobproxy import Client as BMPClient
 except ImportError:
     BMPClient = None
+
+
+log = logging.getLogger(__name__)
 
 
 class ContestoTestCase(unittest.TestCase):
@@ -52,14 +54,11 @@ class ContestoTestCase(unittest.TestCase):
             cls._destroy_session(cls)
 
     def _setup_test(self):
-        logger = logging.getLogger()
-        logger.setLevel("DEBUG")
-        logger.addHandler(log_handler)
         if not config.session["shared"]:
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
-        log.env("sessionId: %s", self.driver.session_id)
-        log.env("capabilities: \n%s\n" % self.driver.capabilities)
+        log.info("sessionId: %s", self.driver.session_id)
+        log.info("capabilities: %s" % self.driver.capabilities)
 
     def _teardown_test(self):
         if not config.session["shared"]:
@@ -106,7 +105,7 @@ class ContestoTestCase(unittest.TestCase):
         :raise: ConnectionError
         """
         try:
-            log.init("starting session...")
+            log.info("starting session...")
             driver = cls.driver_class(
                 command_executor=command_executor,
                 desired_capabilities=desired_capabilities)

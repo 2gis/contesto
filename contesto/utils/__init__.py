@@ -2,7 +2,6 @@ import time
 
 from selenium.webdriver.support.wait import WebDriverWait
 
-from .log import log
 from contesto import config
 
 
