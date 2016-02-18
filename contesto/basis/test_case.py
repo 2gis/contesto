@@ -1,4 +1,3 @@
-import logging
 from types import MethodType
 try:
     from urllib2 import URLError
@@ -11,6 +10,7 @@ from contesto.core.driver_mixin import SeleniumDriverMixin
 
 from contesto.exceptions import ConnectionError
 from contesto.utils.screenshot import save_screenshot_on_error
+from contesto.utils.log import log
 
 from contesto import config
 
@@ -18,9 +18,6 @@ try:
     from browsermobproxy import Client as BMPClient
 except ImportError:
     BMPClient = None
-
-
-log = logging.getLogger(__name__)
 
 
 class ContestoTestCase(unittest.TestCase):

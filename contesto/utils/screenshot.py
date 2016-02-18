@@ -1,13 +1,10 @@
 # coding: utf-8
 import os
-import logging
 from datetime import datetime
 from functools import wraps
 
 from contesto import config
-
-
-log = logging.getLogger(__name__)
+from contesto.utils.log import log
 
 
 def _make_screenshot(driver, test_name, path, clean=False):
