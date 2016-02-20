@@ -1,10 +1,7 @@
 # coding: utf-8
-import logging
-
 from contesto.exceptions import ElementNotFound, TimeoutException
 from contesto.utils import waiter
-
-log = logging.getLogger(__name__)
+from contesto.utils.log import log
 
 
 def find_element(obj, locator, timeout=None):

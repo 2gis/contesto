@@ -1,5 +1,4 @@
 import re
-import logging
 
 from selenium.webdriver import Remote as SeleniumDriver
 from appium.webdriver import Remote as AppiumDriver
@@ -9,10 +8,9 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from contesto.core.element import ContestoWebElement, ContestoMobileElement
 from contesto.exceptions import ElementNotFound, JavaScriptInjectionError, PageCantBeLoadedException
+from contesto.utils.log import log
+
 from contesto import config
-
-
-log = logging.getLogger(__name__)
 
 
 class Driver(object):

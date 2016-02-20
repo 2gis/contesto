@@ -1,11 +1,8 @@
 from traceback import format_exc
-import logging
 
 from contesto.core.finder import find_element
 from contesto.utils import waiter
-
-
-log = logging.getLogger(__name__)
+from contesto.utils.log import log
 
 
 class LoadableObject(object):
