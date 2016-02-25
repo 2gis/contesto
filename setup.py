@@ -14,7 +14,8 @@ setup_args = {
     "install_requires": [
         "selenium==2.48.0",
         "Appium-Python-Client==0.20",
-        "browsermob-proxy==0.7.1"
+        "browsermob-proxy==0.7.1",
+        "lazy_object_proxy==1.2.1",
     ],
     "license": "MIT",
     "description": "",

@@ -3,9 +3,9 @@
 import os
 
 from contesto import ContestoTestCase, config
-config.add_config_file(os.path.join(os.path.dirname(__file__), "config.ini"))
-
 from examples.page import CityPage
+
+config.add_config_file(os.path.join(os.path.dirname(__file__), "config.ini"))
 
 
 class TestExample(ContestoTestCase):

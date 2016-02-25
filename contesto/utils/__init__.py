@@ -1,6 +1,7 @@
 import time
 
 from selenium.webdriver.support.wait import WebDriverWait
+from lazy_object_proxy import Proxy as _Proxy
 
 from contesto import config
 
@@ -15,6 +16,15 @@ class Enum(object):
 
     def __iter__(self):
         return iter(self.enums.values())
+
+
+class LocalProxy(_Proxy):
+    @property
+    def __class__(self):
+        try:
+            return self.__wrapped__.__class__
+        except RuntimeError:
+            return type(self)
 
 
 class waiter(WebDriverWait):
@@ -49,5 +59,3 @@ class waiter(WebDriverWait):
                 break
 
         raise TimeoutException(message)
-
-
