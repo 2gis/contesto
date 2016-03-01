@@ -11,6 +11,8 @@ from contesto.core.driver_mixin import SeleniumDriverMixin
 from contesto.exceptions import ConnectionError
 from contesto.utils.screenshot import save_screenshot_on_error
 from contesto.utils.log import log
+from contesto.globals import _context
+from contesto.step import Steps
 
 from contesto import config
 
@@ -21,6 +23,8 @@ except ImportError:
 
 
 class ContestoTestCase(unittest.TestCase):
+    steps = Steps()
+
     def __new__(cls, test_name='runTest'):
         try:
             cls.driver_settings = getattr(config, cls.driver_section)
@@ -38,7 +42,10 @@ class ContestoTestCase(unittest.TestCase):
             test = test.__func__
         if config.utils.get('save_screenshots'):
             setattr(cls, test_name, save_screenshot_on_error(test))
-        return super(ContestoTestCase, cls).__new__(cls)
+
+        obj = super(ContestoTestCase, cls).__new__(cls)
+        _context.test = obj
+        return obj
 
     @classmethod
     def _setup_class(cls):

@@ -1,4 +1,4 @@
-from contesto import Page, Component, find_element, by
+from contesto import Page, Component, find_element, by, step, Step
 
 
 class SearchResults(Component):
@@ -30,9 +30,13 @@ class SearchBar(Component):
     def search_submit_button(self):
         return find_element(self.element, self._search_submit_button)
 
+    @step("searching for {text}")
     def search(self, text):
-        self.search_field().send_keys(text)
-        self.search_submit_button().click()
+        with Step("entering text %s" % text):
+            self.search_field().send_keys(text)
+
+        with Step("submitting search"):
+            self.search_submit_button().click()
 
 
 class CityPage(Page):
