@@ -6,6 +6,15 @@ from werkzeug.local import LocalProxy as _Proxy
 from contesto import config
 
 
+class JSONSerializable:
+    def to_json(self):
+        res = dict()
+        attrs = [name for name in vars(self) if not name.startswith('_')]
+        for attr in attrs:
+            res[attr] = getattr(self, attr)
+        return res
+
+
 class Enum(object):
     def __init__(self, *sequential, **named):
         enums = dict(zip(sequential, range(len(sequential))), **named)
