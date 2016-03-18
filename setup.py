@@ -15,7 +15,7 @@ setup_args = {
         "selenium==2.48.0",
         "Appium-Python-Client==0.20",
         "browsermob-proxy==0.7.1",
-        "lazy_object_proxy==1.2.1",
+        "werkzeug==0.11.4",
     ],
     "license": "MIT",
     "description": "",
