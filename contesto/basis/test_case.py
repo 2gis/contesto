@@ -43,9 +43,7 @@ class ContestoTestCase(unittest.TestCase):
         if config.utils.get('save_screenshots'):
             setattr(cls, test_name, save_screenshot_on_error(test))
 
-        obj = super(ContestoTestCase, cls).__new__(cls)
-        _context.test = obj
-        return obj
+        return super(ContestoTestCase, cls).__new__(cls)
 
     @classmethod
     def _setup_class(cls):
@@ -58,6 +56,7 @@ class ContestoTestCase(unittest.TestCase):
             cls._destroy_session(cls)
 
     def _setup_test(self):
+        _context.test = self
         if not config.session["shared"]:
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
@@ -65,8 +64,11 @@ class ContestoTestCase(unittest.TestCase):
         log.info("capabilities: %s" % self.driver.capabilities)
 
     def _teardown_test(self):
-        if not config.session["shared"]:
-            self._destroy_session(self)
+        try:
+            if not config.session["shared"]:
+                self._destroy_session(self)
+        finally:
+            _context.test = None
 
     @classmethod
     def _connect_to_proxy(cls):
