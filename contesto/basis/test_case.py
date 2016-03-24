@@ -60,6 +60,8 @@ class ContestoTestCase(unittest.TestCase):
 
         if config.utils.get('collect_metadata'):
             _wrap(cls, test_name, collect_on_error)
+            _wrap(cls, '_setup_test', collect_on_error)
+            _wrap(cls, '_teardown_test', collect_on_error)
 
         return super(ContestoTestCase, cls).__new__(cls)
 
@@ -162,11 +164,9 @@ class ContestoTestCase(unittest.TestCase):
     def tearDownClass(cls):
         cls._teardown_class()
 
-    @collect_on_error
     def setUp(self):
         self._setup_test()
 
-    @collect_on_error
     def tearDown(self):
         self._teardown_test()
 
