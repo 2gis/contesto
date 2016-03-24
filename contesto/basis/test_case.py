@@ -1,3 +1,4 @@
+# coding: utf-8
 from types import MethodType
 try:
     from urllib2 import URLError
@@ -9,10 +10,11 @@ from contesto.core.driver import Driver
 from contesto.core.driver_mixin import SeleniumDriverMixin
 
 from contesto.exceptions import ConnectionError
+from contesto.step import Steps
+from contesto.utils.error_handler import collect_on_error
 from contesto.utils.screenshot import save_screenshot_on_error
 from contesto.utils.log import log
 from contesto.globals import _context
-from contesto.step import Steps
 
 from contesto import config
 
@@ -22,8 +24,23 @@ except ImportError:
     BMPClient = None
 
 
+def _wrap(cls, attr_name, decorator):
+    attr = getattr(cls, attr_name)
+    if isinstance(attr, MethodType):
+        attr = attr.__func__
+    setattr(cls, attr_name, decorator(attr))
+
+
 class ContestoTestCase(unittest.TestCase):
-    steps = Steps()
+    def __init__(self, *args, **kwargs):
+        super(ContestoTestCase, self).__init__(*args, **kwargs)
+        self._meta_info = dict(
+            name=str(self._testMethodName),
+            class_name='%s.%s' % (self.__class__.__module__,
+                                  self.__class__.__name__),
+            steps=Steps(),
+            attachments=[]
+        )
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -37,11 +54,12 @@ class ContestoTestCase(unittest.TestCase):
             cls.driver_settings = getattr(config, cls.driver_section)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
-        test = getattr(cls, test_name)
-        if isinstance(test, MethodType):
-            test = test.__func__
+
         if config.utils.get('save_screenshots'):
-            setattr(cls, test_name, save_screenshot_on_error(test))
+            _wrap(cls, test_name, save_screenshot_on_error)
+
+        if config.utils.get('collect_metadata'):
+            _wrap(cls, test_name, collect_on_error)
 
         return super(ContestoTestCase, cls).__new__(cls)
 
@@ -55,8 +73,14 @@ class ContestoTestCase(unittest.TestCase):
         if config.session["shared"]:
             cls._destroy_session(cls)
 
-    def _setup_test(self):
+    def _init_context(self):
         _context.test = self
+
+    def _free_context(self):
+        _context.test = None
+
+    def _setup_test(self):
+        self._init_context()
         if not config.session["shared"]:
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
@@ -68,7 +92,7 @@ class ContestoTestCase(unittest.TestCase):
             if not config.session["shared"]:
                 self._destroy_session(self)
         finally:
-            _context.test = None
+            self._free_context()
 
     @classmethod
     def _connect_to_proxy(cls):
@@ -138,9 +162,11 @@ class ContestoTestCase(unittest.TestCase):
     def tearDownClass(cls):
         cls._teardown_class()
 
+    @collect_on_error
     def setUp(self):
         self._setup_test()
 
+    @collect_on_error
     def tearDown(self):
         self._teardown_test()
 

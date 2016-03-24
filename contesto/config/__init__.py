@@ -30,6 +30,7 @@ class Config(object):
     }
     utils = {
         "save_screenshots": "",
+        "collect_metadata": ""
     }
 
     def __init__(self, *args):

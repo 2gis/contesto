@@ -53,9 +53,16 @@ def fixture_test_case():
 
 
 class ContestoTestCaseSavesScreenshotOnError(unittest.TestCase):
+    def setUp(self):
+        self._save_screenshot_default_value = config.utils['save_screenshots']
+
+    def tearDown(self):
+        config.utils['save_screenshots'] = self._save_screenshot_default_value
+
     def test_should_save_screenshot(self):
         config.utils['save_screenshots'] = True
         test_case = fixture_test_case()
+        test_case._init_context()
         with self.assertRaises(ValueError):
             test_case.test_method()
         self.assertEqual(1, test_case.driver.save_screenshot.call_count)
@@ -81,11 +88,16 @@ class DecoratedTestSavesScreenshotOnError(unittest.TestCase):
 
 class TestScreenshotSaving(unittest.TestCase):
     def setUp(self):
-        self.test_case = fixture_test_case()
+        self._save_screenshot_default_value = config.utils['save_screenshots']
+
+    def tearDown(self):
+        config.utils['save_screenshots'] = self._save_screenshot_default_value
 
     def test_should_save_screenshot_using_specified_path(self):
         config.utils['save_screenshots'] = True
         config.utils['screenshots_path'] = '/some/test/path'
+        self.test_case = fixture_test_case()
+        self.test_case._init_context()
         with self.assertRaises(ValueError):
             self.test_case.test_method()
 
@@ -94,6 +106,8 @@ class TestScreenshotSaving(unittest.TestCase):
 
     def test_should_not_save_screenshot_if_driver_is_none(self):
         config.utils['save_screenshots'] = True
+        self.test_case = fixture_test_case()
+        self.test_case._init_context()
         self.test_case.driver = None
         with patch('contesto.utils.screenshot._make_screenshot') as mock:
             with self.assertRaises(ValueError):
