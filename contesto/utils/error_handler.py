@@ -42,7 +42,7 @@ def _collect_error_details():
 
 
 def report_to_file(file_name):
-    with open(file_name, 'w') as f:
+    with open(file_name, 'w', encoding='utf-8') as f:
         f.write(json.dumps(
             obj=current_test._meta_info,
             cls=ContestoJSONEncoder,
@@ -56,7 +56,10 @@ def _collect():
     path = get_path_for_metadata()
     file = os.path.join(path, '%s.json' % get_filename_base())
 
-    report_to_file(file)
+    try:
+        report_to_file(file)
+    except Exception as e:
+        log.warn('Error reporting test metadata to file: %s', e)
 
 
 def collect_on_error(func):
