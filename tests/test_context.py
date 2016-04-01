@@ -16,7 +16,7 @@ except ImportError:
 
 
 from contesto import ContestoTestCase, config
-from contesto.globals import current_test, _context
+from contesto.globals import current_test
 
 
 def mktest():
@@ -26,16 +26,16 @@ def mktest():
             return Mock()
 
         def test_1(self):
-            pass
+            self.assertEqual(self, current_test)
 
         def test_2(self):
-            pass
+            self.assertEqual(self, current_test)
 
     return TestCase
 
 
-def helper(q, test):
-    test.setUp()
+def init_context(q, test):
+    test._init_context()
     q.put("Done")
 
 
@@ -47,31 +47,29 @@ class TestCurrentTest(unittest.TestCase):
     def tearDown(self):
         config.session["shared"] = self._config_session_shared
 
-    def test_current_test_setup_and_teardown(self):
+    def test_current_test_set(self):
         testcase = mktest()
         test_1 = testcase('test_1')
         self.assertRaises(RuntimeError, current_test)
-        test_1.setUp()
-        self.assertEqual(test_1, current_test)
-        test_1.tearDown()
+        test_1.run()
         self.assertRaises(RuntimeError, current_test)
 
     def test_current_test_changes(self):
         testcase = mktest()
         test_1 = testcase('test_1')
         test_2 = testcase('test_2')
-        test_1.setUp()
-        self.assertEqual(test_1, current_test)
-        test_1.tearDown()
-        test_2.setUp()
-        self.assertEqual(test_2, current_test)
-        test_2.tearDown()
+        result = unittest.TestResult()
+        test_1.run(result)
+        test_2.run(result)
+        self.assertEqual(2, result.testsRun)
+        self.assertEqual([], result.errors)
 
     def test_processes_dont_share_current_test(self):
         testcase = mktest()
         test = testcase("test_1")
         q = MultiprocessQueue()
-        Process(target=helper, args=(q, test)).start()
+        self.assertRaises(RuntimeError, current_test)
+        Process(target=init_context, args=(q, test)).start()
         self.assertEqual("Done", q.get())
         self.assertRaises(RuntimeError, current_test)
 
@@ -79,14 +77,15 @@ class TestCurrentTest(unittest.TestCase):
         testcase = mktest()
         test = testcase("test_1")
         q = Queue()
-        Thread(target=helper, args=(q, test)).start()
+        Thread(target=init_context, args=(q, test)).start()
         self.assertEqual("Done", q.get())
-        test.tearDown()
+        self.assertEqual(test, current_test)
+        test._free_context()
         self.assertRaises(RuntimeError, current_test)
 
     def test_current_test_class(self):
         testcase = mktest()
         test_1 = testcase('test_1')
-        test_1.setUp()
+        test_1._init_context()
         self.assertIsInstance(current_test, testcase)
-        test_1.tearDown()
+        test_1._free_context()
