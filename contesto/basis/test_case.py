@@ -37,11 +37,10 @@ class ContestoTestCase(unittest.TestCase):
             'steps': Steps(),
             'attachments': []
         }
-        if config.utils.get('save_screenshots'):
-            self.add_handler('on_test_error', _try_make_screenshot)
-
         if config.utils.get('collect_metadata'):
             self.add_handler('on_test_error', _collect)
+        if config.utils.get('save_screenshots'):
+            self.add_handler('on_test_error', _try_make_screenshot)
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -68,7 +67,7 @@ class ContestoTestCase(unittest.TestCase):
         return wrapper
 
     def _run_handlers(self, key):
-        for handler in self._handlers[key]:
+        for handler in reversed(self._handlers[key]):
             try:
                 handler()
             except Exception as e:
