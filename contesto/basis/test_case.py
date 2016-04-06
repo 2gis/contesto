@@ -1,4 +1,5 @@
 # coding: utf-8
+from functools import wraps
 from types import MethodType
 try:
     from urllib2 import URLError
@@ -8,11 +9,10 @@ import unittest
 
 from contesto.core.driver import Driver
 from contesto.core.driver_mixin import SeleniumDriverMixin
-
 from contesto.exceptions import ConnectionError
 from contesto.step import Steps
-from contesto.utils.error_handler import collect_on_error
-from contesto.utils.screenshot import save_screenshot_on_error
+from contesto.utils.collect import _collect
+from contesto.utils.screenshot import _try_make_screenshot
 from contesto.utils.log import log
 from contesto.globals import _context
 
@@ -24,27 +24,24 @@ except ImportError:
     BMPClient = None
 
 
-def _wrap(instance, attr_name, decorator):
-    attr = getattr(instance, attr_name)
-    if isinstance(attr, MethodType):
-        func = decorator(attr.__func__)
-        setattr(instance, attr_name, MethodType(func, instance))
-    else:
-        setattr(instance, attr_name, decorator(attr))
-
-
 class ContestoTestCase(unittest.TestCase):
     def __init__(self, test_name='runTest'):
         super(ContestoTestCase, self).__init__(test_name)
-        self._meta_info = dict(
-            name=str(self._testMethodName),
-            class_name='%s.%s' % (self.__class__.__module__,
-                                  self.__class__.__name__),
-            steps=Steps(),
-            attachments=[]
-        )
+        self._handlers = {
+            'on_test_error': []
+        }
+        self._meta_info = {
+            'name': str(self._testMethodName),
+            'class_name': '%s.%s' % (self.__class__.__module__,
+                                     self.__class__.__name__),
+            'steps': Steps(),
+            'attachments': []
+        }
         if config.utils.get('save_screenshots'):
-            _wrap(self, test_name, save_screenshot_on_error)
+            self.add_handler('on_test_error', _try_make_screenshot)
+
+        if config.utils.get('collect_metadata'):
+            self.add_handler('on_test_error', _collect)
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -60,13 +57,37 @@ class ContestoTestCase(unittest.TestCase):
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
         return super(ContestoTestCase, cls).__new__(cls)
 
+    def _run_test_error_handlers(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except:
+                self._run_handlers('on_test_error')
+                raise
+        return wrapper
+
+    def _run_handlers(self, key):
+        for handler in self._handlers[key]:
+            try:
+                handler()
+            except Exception as e:
+                log.error('%s: Exception while running handler %s: %s' %
+                          (self._testMethodName, str(handler), e))
+
+    def add_handler(self, handler_name, handler_func):
+        try:
+            self._handlers[handler_name].append(handler_func)
+        except KeyError as e:
+            log.warn(e)
+
     def run(self, result=None):
         self._init_context()
         try:
-            if config.utils.get('collect_metadata'):
-                setattr(self, "setUp", collect_on_error(self.setUp))
-                setattr(self, "tearDown", collect_on_error(self.tearDown))
-                _wrap(self, self._testMethodName, collect_on_error)
+            test_method = getattr(self, self._testMethodName)
+            setattr(self, self._testMethodName, self._run_test_error_handlers(test_method))
+            setattr(self, "setUp", self._run_test_error_handlers(self.setUp))
+            setattr(self, "tearDown", self._run_test_error_handlers(self.tearDown))
             super(ContestoTestCase, self).run(result)
         finally:
             self._free_context()

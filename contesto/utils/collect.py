@@ -2,9 +2,7 @@
 import sys
 import json
 import os
-
 from datetime import datetime
-from functools import wraps
 from traceback import format_exc
 
 from contesto import config
@@ -60,15 +58,3 @@ def _collect():
         report_to_file(file)
     except Exception as e:
         log.warn('Error reporting test metadata to file: %s', e)
-
-
-def collect_on_error(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except:
-            _collect()
-            raise
-
-    return wrapper
