@@ -63,15 +63,10 @@ def _collect():
 
 
 def collect_on_error(func):
-    if hasattr(func, "__will_collect_metadata__"):
-        return func
-
-    setattr(func, "__will_collect_metadata__", True)
-
     @wraps(func)
-    def wrapper(test, *args, **kwargs):
+    def wrapper(*args, **kwargs):
         try:
-            return func(test, *args, **kwargs)
+            return func(*args, **kwargs)
         except:
             _collect()
             raise

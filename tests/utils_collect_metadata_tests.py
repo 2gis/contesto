@@ -66,8 +66,7 @@ class TestCaseFailedDuringSetUp(unittest.TestCase):
         test_case = test_case_will_fail()
         test_case._init_context()
         with patch('contesto.utils.error_handler.report_to_file', Mock()) as m:
-            with self.assertRaises(ValueError):
-                test_case.setUp()
+            test_case.run()
         self.assertEqual(1, m.call_count)
 
 
@@ -83,8 +82,7 @@ class ContestoTestCaseCollectMetadata(unittest.TestCase):
         test_case = fixture_test_case()
         test_case._init_context()
         with patch('contesto.utils.error_handler.report_to_file', Mock()) as m:
-            with self.assertRaises(ValueError):
-                test_case.test_method()
+            test_case.run()
         self.assertEqual(1, m.call_count)
 
     def test_should_not_collect_metadata_if_not_collect_metadata(self):
@@ -102,8 +100,7 @@ class ContestoTestCaseCollectMetadata(unittest.TestCase):
         self.test_case._init_context()
         self.test_case.screenshot = None
         with patch('contesto.utils.error_handler.report_to_file', Mock()) as m:
-            with self.assertRaises(ValueError):
-                self.test_case.test_method()
+            self.test_case.run()
         self.assertTrue(m.called)
 
 
@@ -131,8 +128,7 @@ class TestReportMetadataToFile(unittest.TestCase):
         self.test_case = fixture_test_case()
         self.test_case._init_context()
         with patch('contesto.utils.error_handler.report_to_file', Mock()) as m:
-            with self.assertRaises(ValueError):
-                self.test_case.test_method()
+            self.test_case.run()
 
         self.assertEqual(1, m.call_count)
         self.assertTrue(m.call_args[0][0].startswith('/some/test/path'))

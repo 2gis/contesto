@@ -24,16 +24,18 @@ except ImportError:
     BMPClient = None
 
 
-def _wrap(cls, attr_name, decorator):
-    attr = getattr(cls, attr_name)
+def _wrap(instance, attr_name, decorator):
+    attr = getattr(instance, attr_name)
     if isinstance(attr, MethodType):
-        attr = attr.__func__
-    setattr(cls, attr_name, decorator(attr))
+        func = decorator(attr.__func__)
+        setattr(instance, attr_name, MethodType(func, instance))
+    else:
+        setattr(instance, attr_name, decorator(attr))
 
 
 class ContestoTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super(ContestoTestCase, self).__init__(*args, **kwargs)
+    def __init__(self, test_name='runTest'):
+        super(ContestoTestCase, self).__init__(test_name)
         self._meta_info = dict(
             name=str(self._testMethodName),
             class_name='%s.%s' % (self.__class__.__module__,
@@ -41,6 +43,8 @@ class ContestoTestCase(unittest.TestCase):
             steps=Steps(),
             attachments=[]
         )
+        if config.utils.get('save_screenshots'):
+            _wrap(self, test_name, save_screenshot_on_error)
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -54,16 +58,18 @@ class ContestoTestCase(unittest.TestCase):
             cls.driver_settings = getattr(config, cls.driver_section)
         cls.desired_capabilities = cls._form_desired_capabilities(cls.driver_settings)
         cls.command_executor = cls._form_command_executor(cls.driver_settings)
-
-        if config.utils.get('save_screenshots'):
-            _wrap(cls, test_name, save_screenshot_on_error)
-
-        if config.utils.get('collect_metadata'):
-            _wrap(cls, test_name, collect_on_error)
-            _wrap(cls, '_setup_test', collect_on_error)
-            _wrap(cls, '_teardown_test', collect_on_error)
-
         return super(ContestoTestCase, cls).__new__(cls)
+
+    def run(self, result=None):
+        self._init_context()
+        try:
+            if config.utils.get('collect_metadata'):
+                setattr(self, "setUp", collect_on_error(self.setUp))
+                setattr(self, "tearDown", collect_on_error(self.tearDown))
+                _wrap(self, self._testMethodName, collect_on_error)
+            super(ContestoTestCase, self).run(result)
+        finally:
+            self._free_context()
 
     @classmethod
     def _setup_class(cls):
@@ -82,7 +88,6 @@ class ContestoTestCase(unittest.TestCase):
         _context.test = None
 
     def _setup_test(self):
-        self._init_context()
         if not config.session["shared"]:
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
@@ -90,11 +95,8 @@ class ContestoTestCase(unittest.TestCase):
         log.info("capabilities: %s" % self.driver.capabilities)
 
     def _teardown_test(self):
-        try:
-            if not config.session["shared"]:
-                self._destroy_session(self)
-        finally:
-            self._free_context()
+        if not config.session["shared"]:
+            self._destroy_session(self)
 
     @classmethod
     def _connect_to_proxy(cls):
