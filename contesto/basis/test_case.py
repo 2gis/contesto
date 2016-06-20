@@ -1,5 +1,6 @@
 # coding: utf-8
 from functools import wraps
+from time import sleep
 from types import MethodType
 try:
     from urllib2 import URLError
@@ -137,8 +138,18 @@ class ContestoTestCase(unittest.TestCase):
         """
         :rtype: Driver
         """
-        cls._connect_to_proxy()
-        return cls._start_driver(cls.desired_capabilities, cls.command_executor)
+        attepmts = int(config.session.get('session_start_attempts', 3))
+        attempt_pause = config.session.get('session_start_pause', 0.1)
+        last_exception = None
+        for attempt in range(attepmts):
+            try:
+                cls._connect_to_proxy()
+                return cls._start_driver(cls.desired_capabilities, cls.command_executor)
+            except Exception as e:
+                log.exception('Attempt %s: Can\'t start selenium session' % attempt)
+                last_exception = e
+            sleep(attempt_pause)
+        raise last_exception
 
     @staticmethod
     def _form_command_executor(driver_settings):
