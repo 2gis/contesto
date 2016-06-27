@@ -33,10 +33,30 @@ def get_path_for_metadata():
     return path
 
 
+def _collect_page_source():
+    page_source = current_test.driver.page_source
+    path_to_file = "%s.page_source.xml" % os.sep.join(
+        [get_path_for_metadata(), get_filename_base()]
+    )
+    page_source_meta_info = {
+        "path": path_to_file,
+        "name": "page_source",
+        "mime_type": "text/plain"
+    }
+    current_test._meta_info["attachments"].append(page_source_meta_info)
+    with open(path_to_file, "w", encoding="utf-8") as f:
+        f.write(page_source)
+
+
 def _collect_error_details():
     _meta = current_test._meta_info
     _meta['stack_trace'] = format_exc()
     _meta['message'] = str(sys.exc_info()[1])
+    if config.utils.get('collect_page_source', True):
+        try:
+            _collect_page_source()
+        except:
+            log.exception('Error collecting page source')
 
 
 def report_to_file(file_name):

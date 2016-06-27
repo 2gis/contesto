@@ -19,6 +19,8 @@ from contesto import ContestoTestCase, config
 @nottest
 def fixture_test_case():
     class MyTestCaseWithScreenshot(ContestoTestCase):
+        driver = Mock(page_source=Mock())
+
         def test_method(self):
             raise ValueError('123')
 
@@ -43,48 +45,56 @@ class TestCaseUsingConfig(unittest.TestCase):
 
     def tearDown(self):
         config.utils["collect_metadata"] = self._config_collect_metadata
-
-
-class TestCaseFailedDuringSetUp(TestCaseUsingConfig):
-    def test_should_collect_metadata_when_fails_on_setup(self):
-        config.utils['collect_metadata'] = True
-        test_case = test_case_will_fail()
-        with patch('contesto.utils.collect.report_to_file', Mock()) as m:
-            test_case.run()
-        self.assertEqual(1, m.call_count)
+        config.utils['collect_page_source'] = True
 
 
 class ContestoTestCaseCollectMetadata(TestCaseUsingConfig):
     def test_should_collect_metadata(self):
         config.utils['collect_metadata'] = True
         test_case = fixture_test_case()
-        with patch('contesto.utils.collect.report_to_file', Mock()) as m:
-            test_case.run()
-        self.assertEqual(1, m.call_count)
+        test_case.run()
+        self.assertIn('stack_trace', test_case._meta_info.keys())
+        self.assertIn('message', test_case._meta_info.keys())
+        attachments = [
+            item["name"] for item in test_case._meta_info['attachments']
+        ]
+        self.assertIn("page_source", attachments)
 
     def test_should_not_collect_metadata_if_not_collect_metadata(self):
         config.utils['collect_metadata'] = False
         test_case = fixture_test_case()
-        with patch('contesto.utils.collect.report_to_file', Mock()) as m:
-            test_case.run()
-        self.assertEqual(0, m.call_count)
+        test_case.run()
+        self.assertNotIn('stack_trace', test_case._meta_info.keys())
+        self.assertNotIn('message', test_case._meta_info.keys())
+        self.assertListEqual([], test_case._meta_info['attachments'])
 
-    def test_should_not_save_screenshot_if_screenshot_is_none(self):
+    def test_should_collect_metadata_when_fails_on_setup(self):
         config.utils['collect_metadata'] = True
-        self.test_case = fixture_test_case()
-        self.test_case.screenshot = None
-        with patch('contesto.utils.collect.report_to_file', Mock()) as m:
-            self.test_case.run()
-        self.assertTrue(m.called)
+        test_case = test_case_will_fail()
+        test_case.run()
+        self.assertIn('stack_trace', test_case._meta_info.keys())
+        self.assertIn('message', test_case._meta_info.keys())
+        self.assertIn('attachments', test_case._meta_info.keys())
+        self.assertListEqual([], test_case._meta_info['attachments'])
 
-
-class TestReportMetadataToFile(TestCaseUsingConfig):
     def test_should_collect_using_specified_path(self):
         config.utils['collect_metadata'] = True
         config.utils['metadata_path'] = '/some/test/path'
-        self.test_case = fixture_test_case()
-        with patch('contesto.utils.collect.report_to_file', Mock()) as m:
-            self.test_case.run()
-        self.assertEqual(1, m.call_count)
+        test_case = fixture_test_case()
+        with patch('contesto.utils.collect.report_to_file') as m:
+            test_case.run()
+        self.assertTrue(m.called)
         self.assertTrue(m.call_args[0][0].startswith('/some/test/path'))
 
+    def test_disable_page_source_collecting(self):
+        config.utils['collect_metadata'] = True
+        config.utils['collect_page_source'] = False
+        test_case = fixture_test_case()
+        test_case.run()
+        self.assertIn('stack_trace', test_case._meta_info.keys())
+        self.assertIn('message', test_case._meta_info.keys())
+        self.assertIn('attachments', test_case._meta_info.keys())
+        attachments = [
+            item["name"] for item in test_case._meta_info['attachments']
+        ]
+        self.assertNotIn("page_source", attachments)
