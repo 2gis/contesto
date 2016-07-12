@@ -12,7 +12,7 @@ from contesto.core.driver import Driver
 from contesto.core.driver_mixin import SeleniumDriverMixin
 from contesto.exceptions import ConnectionError
 from contesto.step import Steps
-from contesto.utils.collect import _collect
+from contesto.utils.collect import _dump_meta_info, _collect_error_details
 from contesto.utils.screenshot import _try_make_screenshot
 from contesto.utils.log import log
 from contesto.globals import _context
@@ -39,7 +39,8 @@ class ContestoTestCase(unittest.TestCase):
             'attachments': []
         }
         if config.utils.get('collect_metadata'):
-            self.add_handler('on_test_error', _collect)
+            self.add_handler('on_test_error', _collect_error_details)
+            self.addCleanup(_dump_meta_info)
         if config.utils.get('save_screenshots'):
             self.add_handler('on_test_error', _try_make_screenshot)
 
