@@ -32,6 +32,7 @@ class Config(object):
         "save_screenshots": "",
         "collect_metadata": ""
     }
+    logging = {}
 
     def __init__(self, *args):
         """
@@ -44,7 +45,7 @@ class Config(object):
         """
         :type path_to_file: str
         """
-        parser = ConfigParser.SafeConfigParser()
+        parser = ConfigParser.RawConfigParser()
         parser.optionxform = str
         parser.read(path_to_file)
         sections = parser.sections()
