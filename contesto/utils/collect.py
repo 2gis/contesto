@@ -68,13 +68,11 @@ def report_to_file(file_name):
         )
 
 
-def _collect():
-    _collect_error_details()
-
+def _dump_meta_info():
     path = get_path_for_metadata()
     file = os.path.join(path, '%s.json' % get_filename_base())
 
     try:
         report_to_file(file)
-    except Exception as e:
-        log.warn('Error reporting test metadata to file: %s', e)
+    except:
+        log.exception('Error while dump test metadata to file')
