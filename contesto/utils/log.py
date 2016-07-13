@@ -8,7 +8,7 @@ class SessionLogger(object):
         logger = logging.getLogger(__name__)
         for frame in inspect.stack()[1:]:
             test = frame[0].f_locals.get("self")
-            if test and hasattr(test, "driver"):
+            if hasattr(test, "driver"):
                 try:
                     logger = logging.getLogger(str(test.driver.session_id))
                 except AttributeError:
