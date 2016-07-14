@@ -6,6 +6,9 @@ import sys
 from contesto import config
 
 
+LOG_FORMAT = "[%(asctime)s] %(levelname)s %(session_id)s: %(message)s"
+
+
 class SessionStreamHandler(logging.StreamHandler):
     def emit(self, record):
         self.stream = sys.stderr
@@ -31,7 +34,7 @@ def get_logger(name):
 
     stream_handler = SessionStreamHandler()
     log_level = getattr(logging, config.logging["level"].upper())
-    formatter = logging.Formatter(config.logging["format"])
+    formatter = logging.Formatter(LOG_FORMAT)
     stream_handler.setLevel(log_level)
     stream_handler.setFormatter(formatter)
 
