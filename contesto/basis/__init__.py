@@ -42,7 +42,7 @@ class LoadableObject(object):
             try:
                 element = find_element(self.driver, locator)
                 wait = waiter(element)
-                wait.until(lambda el: el.is_displayed())
+                wait.until(lambda el: el.is_displayed(), "Element %s is still not displayed" % locator["value"])
             except:
                 raise Exception("Failed to load page: %s\n"
                                 "%s\n" % (self.__title__, format_exc()))
