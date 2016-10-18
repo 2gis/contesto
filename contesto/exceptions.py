@@ -51,6 +51,17 @@ class UnknownBrowserName(BaseError):
         return u"Browser name should be one of the following: " + str(self.allowed_browsers) + ", not a %s." % self.browser_name
 
 
+class ScreenCastError(BaseError):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        """
+        :rtype: unicode
+        """
+        return u"Screencast Recorder Error: %s " % self.msg
+
+
 class ContestoDriverException(WebDriverException):
     def __init__(self, msg=None, screen=None, stacktrace=None, driver=None):
         self.driver = driver

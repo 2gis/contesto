@@ -30,7 +30,8 @@ class Config(object):
     }
     utils = {
         "save_screenshots": "",
-        "collect_metadata": ""
+        "collect_metadata": "",
+        "record_screencast": ""
     }
     logging = {}
 

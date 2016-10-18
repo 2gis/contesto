@@ -46,7 +46,7 @@ class ContestoTestCase(unittest.TestCase):
             self.add_handler('on_test_error', _try_make_screenshot)
         if config.utils.get('record_screencast'):
             self.add_handler('on_test_error', screencast.stop_screencast_recorder)
-            self.addCleanup(screencast.attach_screencast_to_results)
+            self.addCleanup(screencast.try_to_attach_screencast_to_results)
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -119,7 +119,7 @@ class ContestoTestCase(unittest.TestCase):
         self.driver._testMethodName = self._testMethodName
         log.info('sessionId: %s', self.driver.session_id)
         log.info('capabilities: %s' % self.driver.capabilities)
-        if config.utils.get('record_screencast'):
+        if config.utils.get('record_screencast') and config.utils.get('record_screencast_autostart', True):
             screencast.start_screencast_recorder()
 
     def _teardown_test(self):
