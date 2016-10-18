@@ -93,8 +93,6 @@ class ContestoTestCase(unittest.TestCase):
             setattr(self, self._testMethodName, self._run_test_error_handlers(test_method))
             setattr(self, 'setUp', self._run_test_error_handlers(self.setUp))
             setattr(self, 'tearDown', self._run_test_error_handlers(self.tearDown))
-            if config.utils.get('record_screencast'):
-                screencast.start_screencast_recorder()
             super(ContestoTestCase, self).run(result)
         finally:
             self._free_context()
@@ -121,6 +119,8 @@ class ContestoTestCase(unittest.TestCase):
         self.driver._testMethodName = self._testMethodName
         log.info('sessionId: %s', self.driver.session_id)
         log.info('capabilities: %s' % self.driver.capabilities)
+        if config.utils.get('record_screencast'):
+            screencast.start_screencast_recorder()
 
     def _teardown_test(self):
         if not config.session['shared']:
