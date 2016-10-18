@@ -38,7 +38,10 @@ class ScreencastRecorder:
             "--log-level", "DEBUG",
             "--dir", self.screencast_dir_abspath
         ]
-        return subprocess.Popen(args, stdout=subprocess.PIPE)
+        try:
+            return subprocess.Popen(args, stdout=subprocess.PIPE)
+        except:
+            raise ScreenCastError("Failed to start stf-record")
 
     def convert_images_to_video(self):
         log.info("Start converting images to video...")
@@ -72,7 +75,6 @@ class ScreencastRecorder:
         else:
             raise ScreenCastError("Screencast file was not created for an unknown reason")
 
-
     def start(self):
         self.process = self._start_getting_screenshots_from_device()
         log.info("Record process has been started...")
@@ -90,20 +92,29 @@ class ScreencastRecorder:
 
 
 def start_screencast_recorder():
-    current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    safe_test_name = str(current_test).translate({
-        ord("("): "",
-        ord(")"): "",
-        ord(" "): "_"
-    })
-    device_name = current_test.driver.capabilities.get("deviceName", None)
-    if device_name is None:
-        log.error("")
-    current_test.screencast_recorder = ScreencastRecorder(
-        screencast_name="%s_%s" % (safe_test_name, current_time),
-        device_name=device_name
-    )
-    current_test.screencast_recorder.start()
+    already_started_recorder = getattr(current_test, "screencast_recorder", None)
+    if already_started_recorder is not None:
+        log.error("There is already a Screencast Recorder started for this test. Skipping...")
+        return
+    else:
+        current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        safe_test_name = str(current_test).translate({
+            ord("("): "",
+            ord(")"): "",
+            ord(" "): "_"
+        })
+        device_name = current_test.driver.capabilities.get("deviceName", None)
+        if device_name is None:
+            log.error("No deviceName in driver.capabilities. Failed to start screencast recorder")
+            return
+        current_test.screencast_recorder = ScreencastRecorder(
+            screencast_name="%s_%s" % (safe_test_name, current_time),
+            device_name=device_name
+        )
+        try:
+            current_test.screencast_recorder.start()
+        except ScreenCastError:
+            log.exception("Failed to start screencast recorder for test")
 
 
 def stop_screencast_recorder():
