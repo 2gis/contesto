@@ -98,17 +98,13 @@ def start_screencast_recorder():
         return
     else:
         current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-        safe_test_name = str(current_test).translate({
-            ord("("): "",
-            ord(")"): "",
-            ord(" "): "_"
-        })
+        test_name = str(current_test)
         device_name = current_test.driver.capabilities.get("deviceName", None)
         if device_name is None:
             log.error("No deviceName in driver.capabilities. Failed to start screencast recorder")
             return
         current_test.screencast_recorder = ScreencastRecorder(
-            screencast_name="%s_%s" % (safe_test_name, current_time),
+            screencast_name="%s_%s" % (test_name, current_time),
             device_name=device_name
         )
         try:
