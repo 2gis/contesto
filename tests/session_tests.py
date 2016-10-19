@@ -36,9 +36,11 @@ class NoMixinSessionTest(unittest.TestCase):
     def test_true_shared_session(self):
         testcase = mktest()
         testcase.setUpClass()
+        testcase._init_context()
         testcase.setUp()
         driver1 = testcase.driver
         testcase.setUp()
+        testcase._init_context()
         driver2 = testcase.driver
         self.assertEqual(driver1, driver2)
         self.assertTrue(config.session["shared"])
@@ -57,8 +59,10 @@ class NoMixinNoSharedSessionTest(unittest.TestCase):
     def test_false_shared_session(self):
         testcase = mktest()
         testcase.setUpClass()
+        testcase._init_context()
         testcase.setUp()
         driver1 = testcase.driver
+        testcase._init_context()
         testcase.setUp()
         driver2 = testcase.driver
         self.assertNotEqual(driver1, driver2)
