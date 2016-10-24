@@ -10,7 +10,7 @@ setup_args = {
             'config/*.ini'
         ],
     },
-    "version": "0.2.1",
+    "version": "0.2.2",
     "install_requires": [
         "selenium==2.52.0",
         "Appium-Python-Client==0.20",
@@ -19,7 +19,7 @@ setup_args = {
         "stf-utils==0.0.1",
     ],
     "dependency_links": [
-        "git+https://github.com/2gis/stf-utils.git@b82a7f2250fdb81be9dbd9049659459661f528b1#egg=stf-utils-0.0.1"
+        "git+https://github.com/2gis/stf-utils.git@a9e85eeea8003673b200e9706a6a3ce079ddb7ca#egg=stf-utils-0.0.1"
     ],
     "license": "MIT",
     "description": "",
