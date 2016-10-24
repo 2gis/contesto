@@ -17,3 +17,27 @@ Save screenshot on error
 .. autoclass:: SaveScreenshotOnError
     :members:
     :undoc-members:
+
+Screencast
+==========
+
+
+Install ffmpeg
+++++++++++++++
+
+sudo add-apt-repository --yes ppa:mc3man/trusty-media
+sudo apt-get update
+sudo apt-get install -y ffmpeg
+
+Record screencast
++++++++++++++++++
+
+.. automodule:: contesto.utils.screencast
+
+
+.. autofunction:: start_screencast_recorder
+
+.. autofunction:: stop_screencast_recorder
+
+.. autofunction:: try_to_attach_screencast_to_results
+
