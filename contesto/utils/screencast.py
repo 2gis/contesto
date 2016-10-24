@@ -92,6 +92,10 @@ class ScreencastRecorder:
 
 
 def start_screencast_recorder():
+    """
+    Creates and starts ScreencastRecorder for current test, which will spawn stf-record process
+    and save screenshots from device connected via stf-connect to screencast_dir
+    """
     already_started_recorder = getattr(current_test, "screencast_recorder", None)
     if already_started_recorder is not None:
         log.error("There is already a Screencast Recorder started for this test. Skipping...")
@@ -114,11 +118,18 @@ def start_screencast_recorder():
 
 
 def stop_screencast_recorder():
+    """
+    Stops ScreencastRecorder for current test
+    """
     if getattr(current_test, "screencast_recorder", None):
         current_test.screencast_recorder.stop()
 
 
 def try_to_attach_screencast_to_results():
+    """
+    Tries to create .webm video using ffmpeg from screenshots saved via ScreencastRecorder and attach this video
+    with current_test._meta_info. Stops ScreencastRecorder if it is not stopped yet.
+    """
     if not getattr(current_test, "screencast_recorder", None):
         log.warn('No screencast_recorder found for test %s' % current_test)
         return
