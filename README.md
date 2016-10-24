@@ -8,7 +8,7 @@ TODO
 
 ## Installation
 ```bash
-pip install -U git+https://github.com/2gis/contesto.git#egg=contesto
+pip install -U --process-dependency-links git+https://github.com/2gis/contesto.git#egg=contesto
 ```
 
 ## Quick start
