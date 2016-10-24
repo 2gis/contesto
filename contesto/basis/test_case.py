@@ -15,6 +15,7 @@ from contesto.step import Steps
 from contesto.utils.collect import _dump_meta_info, _collect_error_details
 from contesto.utils.screenshot import _try_make_screenshot
 from contesto.utils.log import log
+from contesto.utils import screencast
 from contesto.globals import _context
 
 from contesto import config
@@ -43,6 +44,9 @@ class ContestoTestCase(unittest.TestCase):
             self.addCleanup(_dump_meta_info)
         if config.utils.get('save_screenshots'):
             self.add_handler('on_test_error', _try_make_screenshot)
+        if config.utils.get('record_screencast'):
+            self.add_handler('on_test_error', screencast.stop_screencast_recorder)
+            self.addCleanup(screencast.try_to_attach_screencast_to_results)
 
     def __new__(cls, test_name='runTest'):
         try:
@@ -87,20 +91,20 @@ class ContestoTestCase(unittest.TestCase):
         try:
             test_method = getattr(self, self._testMethodName)
             setattr(self, self._testMethodName, self._run_test_error_handlers(test_method))
-            setattr(self, "setUp", self._run_test_error_handlers(self.setUp))
-            setattr(self, "tearDown", self._run_test_error_handlers(self.tearDown))
+            setattr(self, 'setUp', self._run_test_error_handlers(self.setUp))
+            setattr(self, 'tearDown', self._run_test_error_handlers(self.tearDown))
             super(ContestoTestCase, self).run(result)
         finally:
             self._free_context()
 
     @classmethod
     def _setup_class(cls):
-        if config.session["shared"]:
+        if config.session['shared']:
             cls.driver = cls._create_session(cls)
 
     @classmethod
     def _teardown_class(cls):
-        if config.session["shared"]:
+        if config.session['shared']:
             cls._destroy_session(cls)
 
     def _init_context(self):
@@ -110,15 +114,18 @@ class ContestoTestCase(unittest.TestCase):
         _context.test = None
 
     def _setup_test(self):
-        if not config.session["shared"]:
+        if not config.session['shared']:
             self.driver = self._create_session(self)
         self.driver._testMethodName = self._testMethodName
-        log.info("sessionId: %s", self.driver.session_id)
-        log.info("capabilities: %s" % self.driver.capabilities)
+        log.info('sessionId: %s', self.driver.session_id)
+        log.info('capabilities: %s' % self.driver.capabilities)
+        if config.utils.get('record_screencast') and config.utils.get('record_screencast_autostart', True):
+            screencast.start_screencast_recorder()
 
     def _teardown_test(self):
-        if not config.session["shared"]:
+        if not config.session['shared']:
             self._destroy_session(self)
+        screencast.stop_screencast_recorder()
 
     @classmethod
     def _connect_to_proxy(cls):
@@ -154,15 +161,15 @@ class ContestoTestCase(unittest.TestCase):
 
     @staticmethod
     def _form_command_executor(driver_settings):
-        host = driver_settings["host"]
-        port = driver_settings["port"]
-        if "prefix" in driver_settings.keys():
-            prefix = driver_settings["prefix"].strip()
+        host = driver_settings['host']
+        port = driver_settings['port']
+        if 'prefix' in driver_settings.keys():
+            prefix = driver_settings['prefix'].strip()
             if len(prefix) > 0 and not prefix.startswith('/'):
                 prefix = '/' + prefix
         else:
             prefix = '/wd/hub'
-        command_executor = "http://%s:%d/%s" % (host, port, prefix.strip('/'))
+        command_executor = 'http://%s:%d/%s' % (host, port, prefix.strip('/'))
         return command_executor.rstrip('/')
 
     @classmethod
@@ -171,7 +178,7 @@ class ContestoTestCase(unittest.TestCase):
         :raise: ConnectionError
         """
         try:
-            log.info("starting session...")
+            log.info('starting session...')
             driver = cls.driver_class(
                 command_executor=command_executor,
                 desired_capabilities=desired_capabilities)
@@ -188,7 +195,7 @@ class ContestoTestCase(unittest.TestCase):
         try:
             cls.driver.quit()
         except URLError:
-            raise ConnectionError('%s:%s' % (cls.driver_settings["host"], cls.driver_settings["port"]))
+            raise ConnectionError('%s:%s' % (cls.driver_settings['host'], cls.driver_settings['port']))
 
     @classmethod
     def setUpClass(cls):
