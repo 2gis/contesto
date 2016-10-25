@@ -58,6 +58,12 @@ def _collect_error_details():
         except:
             log.exception('Error collecting page source')
 
+    if config.utils.get('collect_logcat', True) and hasattr(current_test, 'logcat'):
+        try:
+            current_test.logcat.collect()
+        except:
+            log.exception('Error collecting logcat')
+
 
 def report_to_file(file_name):
     with open(file_name, 'w', encoding='utf-8') as f:

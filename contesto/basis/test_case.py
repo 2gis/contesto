@@ -11,12 +11,10 @@ import unittest
 from contesto.core.driver import Driver
 from contesto.core.driver_mixin import SeleniumDriverMixin
 from contesto.exceptions import ConnectionError
-from contesto.step import Steps
-from contesto.utils.collect import _dump_meta_info, _collect_error_details
-from contesto.utils.screenshot import _try_make_screenshot
-from contesto.utils.log import log
-from contesto.utils import screencast
 from contesto.globals import _context
+from contesto.utils import collect, screencast, screenshot, logcat
+from contesto.utils.log import log
+from contesto.step import Steps
 
 from contesto import config
 
@@ -40,10 +38,10 @@ class ContestoTestCase(unittest.TestCase):
             'attachments': []
         }
         if config.utils.get('collect_metadata'):
-            self.add_handler('on_test_error', _collect_error_details)
-            self.addCleanup(_dump_meta_info)
+            self.add_handler('on_test_error', collect._collect_error_details)
+            self.addCleanup(collect._dump_meta_info)
         if config.utils.get('save_screenshots'):
-            self.add_handler('on_test_error', _try_make_screenshot)
+            self.add_handler('on_test_error', screenshot._try_make_screenshot)
         if config.utils.get('record_screencast'):
             self.add_handler('on_test_error', screencast.stop_screencast_recorder)
             self.addCleanup(screencast.try_to_attach_screencast_to_results)
@@ -116,9 +114,14 @@ class ContestoTestCase(unittest.TestCase):
     def _setup_test(self):
         if not config.session['shared']:
             self.driver = self._create_session(self)
+
         self.driver._testMethodName = self._testMethodName
         log.info('sessionId: %s', self.driver.session_id)
         log.info('capabilities: %s' % self.driver.capabilities)
+
+        if config.utils.get('collect_logcat', True):
+            self.logcat = logcat.Logcat(self.driver)
+
         if config.utils.get('record_screencast') and config.utils.get('record_screencast_autostart', True):
             screencast.start_screencast_recorder()
 
