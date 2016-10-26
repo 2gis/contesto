@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime
+from threading import Timer
 
 from contesto import config
 from contesto.globals import current_test
@@ -80,9 +81,17 @@ class ScreencastRecorder:
         log.info("Record process has been started...")
 
     def stop(self):
+        def kill(process):
+            log.warn("Timeout expired while waiting for process to terminate. Killing...")
+            process.kill()
         if self.process and not self.process.returncode:
-            self.process.terminate()
-            self.process.wait()
+            timer = Timer(15, kill, [self.process])
+            try:
+                timer.start()
+                self.process.terminate()
+                self.process.wait()
+            finally:
+                timer.cancel()
         log.info("Stopped recoder for current session on %s..." % self.device_serial)
 
     def is_alive(self):
