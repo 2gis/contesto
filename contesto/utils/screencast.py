@@ -1,6 +1,5 @@
 # coding: utf-8
 import errno
-import json
 import logging
 import os
 import subprocess
@@ -15,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 class ScreencastRecorder:
-    device_serial = None
+    device_name = None
     process = None
 
     def __init__(self, screencast_name, device_name):
@@ -49,8 +48,7 @@ class ScreencastRecorder:
         input_file = "%s/input.txt" % self.screencast_dir_abspath
 
         if not os.path.exists(input_file):
-            log.error("Input file \"input.txt\" for ffmpeg was not found. Skipping... ")
-            return
+            raise ScreenCastError("Screencast file was not created because input.txt file for ffmpeg not found.")
 
         screencast_file_abspath = "%s/%s.webm" % (self.screencast_dir_abspath, self.screencast_name)
         args = [
@@ -92,7 +90,7 @@ class ScreencastRecorder:
                 self.process.wait()
             finally:
                 timer.cancel()
-        log.info("Stopped recoder for current session on %s..." % self.device_serial)
+        log.info("Stopped recoder for current session on %s..." % self.device_name)
 
     def is_alive(self):
         if self.process and not self.process.returncode:
@@ -161,4 +159,3 @@ def try_to_attach_screencast_to_results():
     except ScreenCastError:
         log.exception("Error trying to make video from screenshots. Nothing to attach to test results")
     current_test.screencast_recorder = None
-
