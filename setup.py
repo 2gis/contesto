@@ -13,7 +13,7 @@ setup_args = {
     "version": "0.2.4",
     "install_requires": [
         "selenium==2.52.0",
-        "Appium-Python-Client==0.20",
+        "Appium-Python-Client==0.24",
         "browsermob-proxy==0.7.1",
         "werkzeug==0.11.4",
     ],
