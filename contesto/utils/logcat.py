@@ -6,26 +6,42 @@ from contesto.utils.log import log
 from contesto.utils.collect import get_path_for_metadata, get_filename_base
 
 
-class Logcat():
+class Logcat:
     def __init__(self, driver):
         self.driver = driver
-        self._logcat = []
-        self.fetch()
+        self._before_start_messages = self._get_log()
+        self._essential_messages = []
 
     def fetch(self):
+        self._essential_messages += self._get_log()
+
+    def _get_log(self):
         try:
-            self._logcat += self.driver.get_log("logcat")
+            return self.driver.get_log("logcat")
         except:
             log.exception("Cannot fetch logcat")
 
+    @staticmethod
+    def _get_lines_from(lines):
+        for line in lines:
+            yield line.get("message", "")
+
+    @property
+    def additional_messages(self):
+        return self._get_lines_from(self._before_start_messages)
+
+    @property
+    def essential_messages(self):
+        return self._get_lines_from(self._essential_messages)
+
     @property
     def messages(self):
-        for item in self._logcat:
-            yield item.get("message", "")
+        return self._get_lines_from(self._before_start_messages + self._essential_messages)
 
-    def dump_to_file(self, file_name):
+    def dump_to_file(self, file_name, custom_data=None):
+        messages = custom_data if custom_data else self.messages
         with open(file_name, "w") as file:
-            [file.write(message + "\n") for message in self.messages]
+            [file.write(message + "\n") for message in messages]
 
     def collect(self, test_obj=None):
         if not test_obj:
@@ -34,7 +50,7 @@ class Logcat():
             [get_path_for_metadata(), get_filename_base()]
         )
         self.fetch()
-        if self._logcat:
+        if self._before_start_messages or self._essential_messages:
             self.dump_to_file(path_to_file)
             meta_info = {
                 "path": path_to_file,
