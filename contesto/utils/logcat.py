@@ -13,7 +13,9 @@ class Logcat:
         self._essential_messages = []
 
     def fetch(self):
-        self._essential_messages += self._get_log()
+        _log = self._get_log()
+        if _log:
+            self._essential_messages += self._get_log()
 
     def _get_log(self):
         try:

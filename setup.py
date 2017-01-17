@@ -10,7 +10,7 @@ setup_args = {
             'config/*.ini'
         ],
     },
-    "version": "0.2.6",
+    "version": "0.2.7",
     "install_requires": [
         "selenium==2.52.0",
         "Appium-Python-Client==0.24",
