@@ -35,7 +35,7 @@ class ScreencastRecorder:
         args = [
             "stf-record",
             "--adb-connect-url", self.device_name,
-            "--log-level", "DEBUG",
+            "--log-level", config.logging.get("level", "INFO"),
             "--dir", self.screencast_dir_abspath
         ]
         try:
