@@ -1,7 +1,7 @@
 # coding: utf-8
 from functools import wraps
 from time import sleep
-from types import MethodType
+
 try:
     from urllib2 import URLError
 except ImportError:

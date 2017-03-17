@@ -1,6 +1,7 @@
 from contesto.config import config
 
 from contesto.basis.test_case import ContestoTestCase
+from contesto.basis.benchmark import BenchmarkBaseCase
 from contesto.basis.page import Page, WebPage, MobilePage
 from contesto.basis.component import Component, WebComponent, MobileComponent
 from contesto.core.locator import *

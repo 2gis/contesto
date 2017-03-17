@@ -33,6 +33,9 @@ class Config(object):
         "collect_metadata": "",
         "record_screencast": ""
     }
+    benchmark = {
+        "run_count": ""
+    }
     logging = {}
 
     def __init__(self, *args):
