@@ -13,7 +13,7 @@ class BenchmarkBaseCase(ContestoTestCase):
 
     def run_multiple_times(self):
         for i in range(1, self.run_count + 1):
-            log.debug('Benchmark iter {}'.format(i))
+            log.info('Benchmark iter {}'.format(i))
             try:
                 res = self._single_method()
             except:
