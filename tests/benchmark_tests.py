@@ -12,14 +12,22 @@ from contesto import BenchmarkBaseCase, config
 
 def make():
     class TestFakeBenchmark(BenchmarkBaseCase):
-        mock = Mock()
+        mock_method = Mock()
+        mock_setup = Mock()
+        mock_teardown = Mock()
 
         @classmethod
         def _create_session(cls, *args, **kwargs):
             return Mock()
 
         def test_method(self):
-            self.mock()
+            self.mock_method()
+
+        def setUp(self):
+            self.mock_setup()
+
+        def tearDown(self):
+            self.mock_teardown()
 
     return TestFakeBenchmark('test_method')
 
@@ -37,4 +45,6 @@ class TestBenchmarkBaseCase(unittest.TestCase):
     def test_multiple_run(self):
         benchmark = make()
         benchmark.run()
-        self.assertEqual(benchmark.mock.call_count, 5)
+        self.assertEqual(benchmark.mock_method.call_count, 5)
+        self.assertEqual(benchmark.mock_setup.call_count, 5)
+        self.assertEqual(benchmark.mock_teardown.call_count, 5)
