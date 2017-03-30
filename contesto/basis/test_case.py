@@ -65,8 +65,9 @@ class ContestoTestCase(unittest.TestCase):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except:
-                self._run_handlers('on_test_error')
+            except Exception as e:
+                if not isinstance(e, unittest.SkipTest):
+                    self._run_handlers('on_test_error')
                 raise
         return wrapper
 
