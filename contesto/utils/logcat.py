@@ -45,6 +45,9 @@ class Logcat:
         with open(file_name, "w") as file:
             [file.write(message + "\n") for message in messages]
 
+    def flush(self):
+        self._essential_messages = []
+
     def collect(self, test_obj=None):
         if not test_obj:
             test_obj = current_test
