@@ -96,6 +96,26 @@ class ContestoTestCase(unittest.TestCase):
         finally:
             self._free_context()
 
+    def __has_errors_py2(self):
+        """
+        Check test is failure/error for py2x unittest.Testcase implementation
+        :return: bool
+        """
+        return bool(self._resultForDoCleanups.errors)
+
+    def __has_errors_py3(self):
+        """
+        Check test is failure/error for py3x unittest.Testcase implementation
+        :return: bool
+        """
+        return bool(self._outcome.errors)
+
+    def has_errors(self):
+        try:
+            return self.__has_errors_py3()
+        except AttributeError:
+            return self.__has_errors_py2()
+
     @classmethod
     def _setup_class(cls):
         if config.session['shared']:

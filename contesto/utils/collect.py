@@ -75,6 +75,9 @@ def report_to_file(file_name):
 
 
 def _dump_meta_info():
+    if not current_test.has_errors():
+        return
+
     path = get_path_for_metadata()
     file = os.path.join(path, '%s.json' % get_filename_base())
 
