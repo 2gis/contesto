@@ -28,14 +28,17 @@ class ContextFilter(logging.Filter):
         return True
 
 
-def get_logger(name):
+def get_logger(name, level=None, format_=LOG_FORMAT):
+    if not level:
+        level = getattr(logging, config.logging["level"].upper())
+
     logger = logging.getLogger(name)
+    logger.setLevel(level)
     context_filter = ContextFilter()
 
     stream_handler = SessionStreamHandler()
-    log_level = getattr(logging, config.logging["level"].upper())
-    formatter = logging.Formatter(LOG_FORMAT)
-    stream_handler.setLevel(log_level)
+    formatter = logging.Formatter(format_)
+    stream_handler.setLevel(level)
     stream_handler.setFormatter(formatter)
 
     logger.addHandler(stream_handler)
