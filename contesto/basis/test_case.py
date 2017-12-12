@@ -140,7 +140,7 @@ class ContestoTestCase(unittest.TestCase):
         log.info('sessionId: %s', self.driver.session_id)
         log.info('capabilities: %s' % self.driver.capabilities)
 
-        if config.utils.get('collect_logcat', True):
+        if config.utils.get('collect_logcat'):
             self.logcat = logcat.Logcat(self.driver)
 
         if config.utils.get('record_screencast') and config.utils.get('record_screencast_autostart', True):

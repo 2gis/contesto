@@ -58,7 +58,7 @@ def _collect_error_details():
         except:
             log.exception('Error collecting page source')
 
-    if config.utils.get('collect_logcat', True) and hasattr(current_test, 'logcat'):
+    if hasattr(current_test, 'logcat'):
         try:
             current_test.logcat.collect()
         except:
