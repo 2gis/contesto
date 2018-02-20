@@ -19,7 +19,7 @@ class ContextFilter(logging.Filter):
     def filter(self, record):
         for frame in inspect.stack()[1:]:
             test = frame[0].f_locals.get("self")
-            if hasattr(test, "driver") and hasattr(test.driver, "session_id"):
+            if hasattr(test, "driver") and hasattr(test.driver, "session_id") and test.driver.session_id:
                 record.session_id = test.driver.session_id
                 break
         else:

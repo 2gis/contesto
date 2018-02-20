@@ -220,6 +220,8 @@ class ContestoTestCase(unittest.TestCase):
             cls.driver.quit()
         except URLError:
             raise ConnectionError('%s:%s' % (cls.driver_settings['host'], cls.driver_settings['port']))
+        if hasattr(cls.driver, 'session_id'):
+            cls.driver.session_id = None
 
     @classmethod
     def setUpClass(cls):
