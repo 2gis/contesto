@@ -172,9 +172,9 @@ class ContestoWebDriver(Driver, SeleniumDriver):
         return "return Sizzle(\"%s\");" % re.escape(sizzle_selector)
 
     def create_web_element(self, element_id):
-        return ContestoWebElement(self, element_id)
+        return ContestoWebElement(self, element_id, self.w3c)
 
 
 class ContestoMobileDriver(Driver, AppiumDriver):
     def create_web_element(self, element_id):
-        return ContestoMobileElement(self, element_id)
+        return ContestoMobileElement(self, element_id, self.w3c)
